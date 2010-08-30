@@ -1,0 +1,22 @@
+Tempita
+-------
+
+http://pythonpaste.org/tempita/
+
+Files:
+	tempita.py
+	_looper.py
+	
+
+This is a modified version to remove dependences and fix issue with unicode chars (I think that was a problem in IronPython)
+
+
+Python Libs
+-----------
+
+http://www.python.org/download/releases/2.7/
+
+Files:
+	re.py
+
+Copied from libs dir

@@ -1,0 +1,51 @@
+{{ if info }}
+<span style="font-style:italic;color:#BB5555">
+	{{ for i in info }}
+		{{ i }}<br />
+	{{ endfor }}
+</span>
+{{ endif }}
+
+<h1>
+	{{ book.Series | '<Unknown Series>' }} 
+	{{ if book.Volume }}
+		- Volume {{ book.Volume }}
+	{{ endif }}
+	{{ if book.Number }}
+		#{{ book.Number }} {{ if book.Count }}(of {{ book.Count }}){{ endif }}
+	{{ endif }}
+</h1>
+
+{{ if book.AlternateSeries }}
+	<h2>
+		{{ book.AlternateSeries }}
+		{{ if book.AlternateNumber }}
+			#{{ book.AlternateNumber }} {{ if book.AlternateCount }}(of {{ book.AlternateCount }}){{ endif }}
+		{{ endif }}
+	</h2>
+{{ endif }}
+
+<table border="0px" cellspacing="20px">
+	<tr>
+		<td valign="top" width="1px">
+			{{ if book.Cover }}
+				<img src="{{ book.Cover | url }}" border="1px" />
+			{{ endif }}
+		</td>
+		<td valign="top">
+			{{ if book.Year or book.Month }}
+				<b>Date:</b> {{book.Month | '??'}}/{{book.Year | '????'}}<br />
+			{{ endif }}
+
+			<b>Read:</b> {{ book.ReadPercentage }}%<br />
+
+			<br />
+			{{ if book.Title }}
+				<b>Title:</b> {{book.Title}}<br />
+			{{ endif }}
+			{{ if book.Summary }}
+				<b>Summary:</b> {{ html_quote(book.Summary).replace('\n', '<br />') | html }}<br />
+			{{ endif }}
+		</td>
+	</tr>
+</table>
