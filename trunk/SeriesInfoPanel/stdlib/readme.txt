@@ -1,1 +1,0 @@
-Copyed from Python 2.7 source archive
