@@ -275,7 +275,7 @@ class Template(object):
             if getattr(e, 'args', None):
                 arg0 = e.args[0]
             else:
-                arg0 = str(e)
+                arg0 = ToString(e)
             e.args = (self._add_line_info(arg0, pos),)
             raise exc_info[0], e, exc_info[2]
 
@@ -294,12 +294,7 @@ class Template(object):
 
     def _repr(self, value, pos):
         __traceback_hide__ = True
-        if value is None:
-            return ''
-        elif not isinstance(value, basestring):
-            return str(value)
-        else:
-            return value
+        return ToString(value)
 
     def _add_line_info(self, msg, pos):
         msg = "%s at line %s column %s" % (
@@ -369,15 +364,11 @@ def html_quote(value, force=True):
         return value.__html__()
     if value is None:
         return ''
-    if not isinstance(value, basestring):
-        value = str(value)
-    value = _cgi_escape(value)
+    value = _cgi_escape(ToString(value))
     return value
 
 def url(v):
-    if not isinstance(v, basestring):
-        v = str(v)
-    return _urllib_quote(v)
+    return _urllib_quote(ToString(v))
 
 def attr(**kw):
     kw = kw.items()

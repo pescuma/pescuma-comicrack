@@ -158,6 +158,35 @@ class Volume:
 		self.name = ''
 		self.issues = []
 	
+	def GetIssuesRange(self):
+		ret = ''
+		
+		numIssues = len(self.issues)
+		
+		if numIssues < 1:
+			return '-'
+			
+		elif numIssues == 1:
+			return self.issues[0].Number
+			
+		else:
+			firstNum = self.issues[0].Number
+			lastNum = self.issues[-1].Number
+			
+			hasMillion = (lastNum == '1000000')
+			if hasMillion:
+				lastNum = self.issues[-2].Number
+			
+			if firstNum != lastNum:
+				ret = firstNum + ' to ' + lastNum
+			else:
+				ret = firstNum
+			
+			if hasMillion:
+				ret += ' and 1.000.000'
+			
+			return ret
+	
 	def GetDuplicatedIssues(self):
 		nums = set()
 		ret = []
@@ -178,6 +207,7 @@ class Volume:
 			nums.add(ToInt(book.Number))
 		
 		nums.discard(0)
+		nums.discard(1000000)
 		
 		ret = []
 		next = 0
@@ -225,7 +255,7 @@ class Placeholder:
 def GenerateHTMLForIssue(book):
 	book = BookWrapper(book)
 	
-	issueTemplate = tempita.HTMLTemplate.from_filename(_SCRIPT_DIRECTORY + 'issue.tmpl')
+	#issueTemplate = tempita.HTMLTemplate.from_filename(_SCRIPT_DIRECTORY + 'issue.tmpl')
 	html = issueTemplate.substitute(book=book, info='')
 	
 	#print html
@@ -269,14 +299,7 @@ def GenerateHTMLForSeries(books):
 			
 			v.name = volume.name
 			v.cover = volume.issues[0].Cover
-			
-			firstNum = volume.issues[0].Number
-			lastNum = volume.issues[-1].Number
-			if firstNum != lastNum:
-				v.issues = firstNum + ' to ' + lastNum
-			else:
-				v.issues = firstNum
-			
+			v.issues = volume.GetIssuesRange()
 			v.missingIssues = volume.GetMissingIssues()
 			v.duplicatedIssues = volume.GetDuplicatedIssues()
 			v.readPercentage = volume.GetReadPercentage()
