@@ -1,13 +1,13 @@
 {{ if info }}
 <span style="font-style:italic;color:#BB5555">
 	{{ for i in info }}
-		{{ i | html }}<br />
+		{{ i }}<br />
 	{{ endfor }}
 </span>
 {{ endif }}
 
 {{ for series in allSeries }}
-	<h1>{{ series.name | '<Unknown Series>' | html }}</h1>
+	<h1>{{ series.name | '<Unknown Series>' }}</h1>
 	
 	<table border="0px" cellspacing="20px">
 		{{ for volume in series.volumes }}
@@ -19,19 +19,19 @@
 				</td>
 				<td valign="top">
 					{{ if series.showVolumeNames }}
-						<h2>Volume {{ volume.name | '<Unknown>' | html }}</h2>
+						<h2>Volume {{ volume.name | '<Unknown>' }}</h2>
 					{{ endif }}
 					
-					<b>Issues:</b> {{ volume.issues | html }}<br />
+					<b>Issues:</b> {{ volume.issues }}<br />
 					
-					<b>Read:</b> {{ volume.readPercentage | html }}%<br />
+					<b>Read:</b> {{ volume.readPercentage }}%<br />
 					
 					{{ if volume.missingIssues }}
-						<b>Missing issues:</b> {{ for i in volume.missingIssues }}{{ i | html }} {{ endfor }}<br />
+						<b>Missing issues:</b> {{ for i in volume.missingIssues }}{{ i }} {{ endfor }}<br />
 					{{ endif }}
 					
 					{{ if volume.duplicatedIssues }}
-						<b>Duplicated issues:</b> {{ for i in volume.duplicatedIssues }}{{ i | html }} {{ endfor }}<br />
+						<b>Duplicated issues:</b> {{ for i in volume.duplicatedIssues }}{{ i }} {{ endfor }}<br />
 					{{ endif }}
 				</td>
 			</tr>

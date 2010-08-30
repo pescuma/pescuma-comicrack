@@ -253,7 +253,7 @@ def SeriesHtmlInfoPanel(books):
 			info.append('Stoped processing because it took too much time')
 			break
 
-	seriesTemplate = tempita.HTMLTemplate.from_filename(_SCRIPT_DIRECTORY + 'series.tmpl')
+	#seriesTemplate = tempita.HTMLTemplate.from_filename(_SCRIPT_DIRECTORY + 'series.tmpl')
 	html = seriesTemplate.substitute(allSeries=allSeries, info=info)
 	
 	#print html
