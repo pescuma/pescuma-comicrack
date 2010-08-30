@@ -17,27 +17,28 @@ not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.
 """
 
+_SCRIPT_DIRECTORY =  __file__[:-len('SeriesInfoPanel.py')] 
+
+import sys
+sys.path.append(_SCRIPT_DIRECTORY + 'stdlib')
 import clr
 clr.AddReference('System.Drawing')
-import System
 
+import System
+import tempita
+import time
+
+
+# Globals
 oldTmpFiles = []
+seriesTemplate = tempita.HTMLTemplate.from_filename(_SCRIPT_DIRECTORY + 'series.tmpl')
+
 
 def DeleteOldTmpFiles():
 	global oldTmpFiles
 	for file in oldTmpFiles:
 		System.IO.File.Delete(file)
 	oldTmpFiles = []
-
-def html_encode(text):
-	html_encode_table = {
-		"&": "&amp;",
-		'"': "&quot;",
-#		"'": "&apos;",
-		">": "&gt;",
-		"<": "&lt;",
-		}
-	return "".join(html_encode_table.get(c,c) for c in text)
 
 class DB:
 	def __init__(self):
@@ -77,8 +78,8 @@ class Volume:
 		nums = set()
 		ret = []
 		
-		for issue in self.issues:
-			n = GetNumber(issue)
+		for book in self.issues:
+			n = GetNumber(book)
 			if n in nums:
 				ret.append(n)
 			else:
@@ -89,8 +90,8 @@ class Volume:
 	def GetMissingIssues(self):
 		nums = set()
 		
-		for issue in self.issues:
-			nums.add(GetNumberInt(issue))
+		for book in self.issues:
+			nums.add(GetNumberInt(book))
 		
 		nums.discard(0)
 		
@@ -107,6 +108,18 @@ class Volume:
 			next = n + 1
 		
 		return ret
+	
+	def GetReadPercentage(self):
+		read = 0
+		for book in self.issues:
+			read += book.ReadPercentage
+		read = float(read) / len(self.issues)
+		
+		# Avoid 100% when missing only one page
+		if read < 99:
+			return int(round(read))
+		else:
+			return int(read)
 
 def GetSeriesName(book):
 	ret = book.Series.strip()
@@ -137,12 +150,6 @@ def GetNumberInt(book):
 	else:
 		return 0
 
-def FirstNotEmpty(*args):
-	for x in args:
-		if x != '':
-			return x
-	return ''
-
 def ResizeImage(image, height):
 	result = System.Drawing.Bitmap(image.Width * height / image.Height, height)
 	
@@ -172,16 +179,18 @@ def GetCoverImagePath(book, height):
 	coverFile += '.jpg'
 	oldTmpFiles.append(coverFile)
 	
-	print coverFile
+	#print coverFile
 	
 	try:
 		image = ResizeImage(image, height)
 		image.Save(coverFile, System.Drawing.Imaging.ImageFormat.Jpeg)
 		return coverFile
 	except Exception,e:
-		print 'Exception when saving: ', e
+		print '[SeriesInfoPanel] Exception when saving image: ', e
 		return ''
 
+class Placeholder:
+	pass
 
 #@Name Series Info Panel
 #@Hook ComicInfoHtml
@@ -193,66 +202,59 @@ def SeriesHtmlInfoPanel(books):
 	
 	db = DB()
 	
+	info = []
+	
+	finishTime = time.clock() + 1
 	for book in books:
 		series = db.GetSeries(GetSeriesName(book))
 		volume = series.GetVolume(GetVolumeName(book))
 		volume.issues.append(book)
+		
+		# Avoid look forever
+		if time.clock() > finishTime:
+			info.append('Stoped loading because it took too much time')
+			break
 	
-	html = []
+	allSeries = []
 	
+	finishTime = time.clock() + 2
 	for seriesKey in sorted(db.series.iterkeys()):
 		series = db.series[seriesKey]
 		
-		html.append('<h1>' + html_encode(FirstNotEmpty(series.name, '<Unknown series>')) + '</h1>')
+		s = Placeholder()
+		allSeries.append(s)
 		
-		showVolumeNames = (series.volumes.keys() != [''])
-		
-		html.append('<table border="0px" cellspacing="20px">')
+		s.name = series.name
+		s.showVolumeNames = (series.volumes.keys() != [''])
+		s.volumes = []
 		
 		for volumeKey in sorted(series.volumes.iterkeys()):
 			volume = series.volumes[volumeKey]
-			html.append('<tr>')
 			
-			# Left column
-			html.append('<td width="1px" valign="top">')
+			v = Placeholder()
+			s.volumes.append(v)
 			
-			# Cover
-			cover = GetCoverImagePath(volume.issues[0], 120)
-			if cover != '':
-				html.append('<img src="' + html_encode(cover) + '" />')
+			v.name = volume.name
+			v.cover = GetCoverImagePath(volume.issues[0], 120)
 			
-			html.append('</td>')
-			
-			# Right column
-			html.append('<td valign="top">')
-			
-			# Volume
-			if showVolumeNames:
-				html.append('<h2>Volume ' + html_encode(FirstNotEmpty(volume.name, '<Unknown>')) + '</h2>')
-			
-			# Issues
-			nums = GetNumber(volume.issues[0])
+			firstNum = GetNumber(volume.issues[0])
 			lastNum = GetNumber(volume.issues[-1])
-			if nums != lastNum:
-				nums += ' to ' + lastNum
-			html.append('<b>Issues:</b> ' + html_encode(nums) + '<br />')
+			if firstNum != lastNum:
+				v.issues = firstNum + ' to ' + lastNum
+			else:
+				v.issues = firstNum
 			
-			# Missing issues
-			missingIssues = volume.GetMissingIssues()
-			if len(missingIssues) > 0:
-				html.append('<b>Missing issues:</b> ' + html_encode(' '.join(missingIssues)) + '<br />')
-			
-			# Duplicated issues
-			duplicatedIssues = volume.GetDuplicatedIssues()
-			if len(duplicatedIssues) > 0:
-				html.append('<b>Duplicated issues:</b> ' + html_encode(' '.join(duplicatedIssues)) + '<br />')
-						
-			html.append('</td>')
-			
-			html.append('</tr>')
+			v.missingIssues = volume.GetMissingIssues()
+			v.duplicatedIssues = volume.GetDuplicatedIssues()
+			v.readPercentage = volume.GetReadPercentage()
 		
-		html.append('</table>')
+		# Avoid look forever
+		if time.clock() > finishTime:
+			info.append('Stoped processing because it took too much time')
+			break
+
+	seriesTemplate = tempita.HTMLTemplate.from_filename(_SCRIPT_DIRECTORY + 'series.tmpl')
+	html = seriesTemplate.substitute(allSeries=allSeries, info=info)
 	
-	html = '\n'.join(html)
 	#print html
 	return html
