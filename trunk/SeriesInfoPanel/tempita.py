@@ -31,7 +31,6 @@ If there are syntax errors ``TemplateError`` will be raised.
 
 import re
 import sys
-import os
 from _looper import looper
 
 
@@ -64,7 +63,7 @@ class _TemplateBreak(Exception):
     pass
 
 def get_file_template(name, from_template):
-    path = os.path.join(from_template.name, name)
+    path = from_template.name + '\\' + name
     return from_template.__class__.from_filename(
         path, namespace=from_template.namespace,
         get_template=from_template.get_template)
