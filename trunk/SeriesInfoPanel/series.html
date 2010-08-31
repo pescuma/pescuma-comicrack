@@ -1,0 +1,60 @@
+{{ if info }}
+<span style="font-style:italic;color:#BB5555">
+	{{ for i in info }}
+		{{ i }}<br />
+	{{ endfor }}
+</span>
+{{ endif }}
+
+{{ for series in allSeries }}
+	<h1>{{ series.Name | '<Unknown Series>' }}</h1>
+	
+	{{ if len(series.Volumes) > 1 }}
+		{{ series.NumIssues }} books<br />
+	{{ endif }}
+	
+	<table border="0px" cellspacing="20px">
+		{{ for volume in series.Volumes }}
+			<tr>
+				<td valign="top" width="1px">
+					{{ if volume.Cover }}
+						<img src="{{ volume.Cover | url }}" height="120px" border="1px" />
+					{{ endif }}
+				</td>
+				<td valign="top">
+					{{ if series.ShowVolumeNames }}
+						<h2>Volume {{ volume.Name | '<Unknown>' }}</h2>
+					{{ endif }}
+					
+					{{ volume.NumIssues }} books<br />
+					
+					<b>Issues:</b> {{ volume.Issues }}<br />
+					
+					{{ if volume.MissingIssues }}
+						<b>Missing issues:</b> {{ ' '.join(volume.MissingIssues) }}<br />
+					{{ endif }}
+					
+					{{ if volume.DuplicatedIssues }}
+						<b>Duplicated issues:</b> {{ ' '.join(volume.DuplicatedIssues) }}<br />
+					{{ endif }}
+					
+					<b>Read:</b> {{ volume.ReadPercentage }}%<br />
+					
+					{{ if len(volume.FilesFormat) > 1 }}
+						<b>Formats:</b> {{ ", ".join(volume.FilesFormat) }}<br />
+					{{ else }}
+						<b>Format:</b> {{ volume.FilesFormat[0] }}<br />
+					{{ endif }}
+					
+					{{ if volume.Rating }}
+						<b>Rating:</b> {{ volume.Rating }}<br />
+					{{ endif }}
+					
+					{{ if volume.CommunityRating }}
+						<b>CommunityRating:</b> {{ volume.CommunityRating }}<br />
+					{{ endif }}
+				</td>
+			</tr>
+		{{ endfor }}
+	</table>
+{{ endfor }}

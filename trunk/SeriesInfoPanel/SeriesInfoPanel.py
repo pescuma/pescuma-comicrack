@@ -17,250 +17,129 @@ not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.
 """
 
-_SCRIPT_DIRECTORY =  __file__[:-len('SeriesInfoPanel.py')] 
-
 import sys
-import clr
-clr.AddReference('System.Drawing')
-
 import System
 import tempita
 import time
 
+from _utils import *
+from _db import *
+from BookWrapper import *
 
-# Globals
-oldTmpFiles = []
-seriesTemplate = tempita.HTMLTemplate.from_filename(_SCRIPT_DIRECTORY + 'series.tmpl')
-issueTemplate = tempita.HTMLTemplate.from_filename(_SCRIPT_DIRECTORY + 'issue.tmpl')
-
-
-def ToString(v):
-	if v is None:
-		return ''
-	if not isinstance(v, basestring):
-		return str(v)
-	return v
-
-def ToInt(v):
-	v = ToString(v)
-	if v.isdigit():
-		return int(v)
-	else:
-		return 0
-
-def DeleteOldTmpFiles():
-	global oldTmpFiles
-	for file in oldTmpFiles:
-		System.IO.File.Delete(file)
-	oldTmpFiles = []
-	
-	
-class BookWrapper:
-	_emptyVals = { 
-		'Count' : '-1', 
-		'Year' : '-1', 
-		'Month' : '-1', 
-		'Volume' : '-1', 
-		'AlternateCount' : '-1', 
-		'Rating' : '-1'
-		}
-	
-	def __init__(self, book):
-		self.raw = book
-		self._cover = None
-	
-	def _get(self, name):
-		try:
-			return ToString(getattr(self.raw, name)).strip()
-		except:
-			return ''
-	
-	def __getattr__(self, name):
-		if name == 'Cover':
-			return self.GetCover()
-		
-		if name in self._emptyVals:
-			emptVal = self._emptyVals[name]
-		else:
-			emptVal = ''
-			
-		ret = self._get(name)
-		if ret == '' or ret == emptVal:
-			ret = self._get("Shadow" + name)
-		if ret == '' or ret == emptVal:
-			ret = ''
-		return ret
-	
-	def GetCover(self, height = 120):
-		global oldTmpFiles
-		
-		if not (self._cover is None):
-			return self._cover
-		
-		coverIndex = 0 
-		if self.raw.FrontCoverPageIndex > 0:
-			coverIndex = self.raw.FrontCoverPageIndex
-		image = ComicRack.App.GetComicPage(self.raw, coverIndex)
-		
-		if image is None:
-			self._cover = ''
-			return ''
-
-		tmpFile = System.IO.Path.GetTempFileName()
-		oldTmpFiles.append(tmpFile)
-
-		# We need a jpg
-		self._cover = tmpFile + '.jpg'
-		oldTmpFiles.append(self._cover)
-		#print self._cover
-		
-		try:
-			image = ResizeImage(image, height)
-			image.Save(self._cover, System.Drawing.Imaging.ImageFormat.Jpeg)
-			return self._cover
-		except Exception,e:
-			print '[SeriesInfoPanel] Exception when saving image: ', e
-			self._cover = ''
-			return ''
-
-
-class DB:
-	def __init__(self):
-		self.series = {}
-	
-	def GetSeries(self, name):
-		if name in self.series:
-			return self.series[name]
-		
-		s = Series()
-		s.name = name
-		self.series[name] = s
-		return s
-
-
-class Series:
-	def __init__(self):
-		self.name = ''
-		self.volumes = {}
-	
-	def GetVolume(self, name):
-		if name in self.volumes:
-			return self.volumes[name]
-		
-		v = Volume()
-		v.name = name
-		self.volumes[name] = v
-		return v
-
-
-class Volume:
-	def __init__(self):
-		self.name = ''
-		self.issues = []
-	
-	def GetIssuesRange(self):
-		ret = ''
-		
-		numIssues = len(self.issues)
-		
-		if numIssues < 1:
-			return '-'
-			
-		elif numIssues == 1:
-			return self.issues[0].Number
-			
-		else:
-			firstNum = self.issues[0].Number
-			lastNum = self.issues[-1].Number
-			
-			hasMillion = (lastNum == '1000000')
-			if hasMillion:
-				lastNum = self.issues[-2].Number
-			
-			if firstNum != lastNum:
-				ret = firstNum + ' to ' + lastNum
-			else:
-				ret = firstNum
-			
-			if hasMillion:
-				ret += ' and 1.000.000'
-			
-			return ret
-	
-	def GetDuplicatedIssues(self):
-		nums = set()
-		ret = []
-		
-		for book in self.issues:
-			n = book.Number
-			if n in nums:
-				ret.append(n)
-			else:
-				nums.add(n)
-		
-		return ret
-	
-	def GetMissingIssues(self):
-		nums = set()
-		
-		for book in self.issues:
-			nums.add(ToInt(book.Number))
-		
-		nums.discard(0)
-		nums.discard(1000000)
-		
-		ret = []
-		next = 0
-		for n in sorted(nums):
-			if next != 0 and n > next:
-				if n > next + 2:
-					ret.append(str(next) + '-' + str(n-1))
-				elif n == next + 2:
-					ret.append(str(next) + ' ' + str(next + 1))
-				else:
-					ret.append(str(next))
-			next = n + 1
-		
-		return ret
-	
-	def GetReadPercentage(self):
-		read = 0
-		for book in self.issues:
-			read += ToInt(book.ReadPercentage)
-		read = float(read) / len(self.issues)
-		
-		# Avoid 100% when missing only one page
-		if read < 99:
-			return int(round(read))
-		else:
-			return int(read)
-
-
-def ResizeImage(image, height):
-	result = System.Drawing.Bitmap(image.Width * height / image.Height, height)
-	
-	graphics = System.Drawing.Graphics.FromImage(result)
-	graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality
-	graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
-	graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality
-	graphics.DrawImage(image, 0, 0, result.Width, result.Height)
-	
-	return result
-
-
-class Placeholder:
-	pass
 
 
 def GenerateHTMLForIssue(book):
 	book = BookWrapper(book)
 	
-	#issueTemplate = tempita.HTMLTemplate.from_filename(_SCRIPT_DIRECTORY + 'issue.tmpl')
+	issueTemplate = tempita.HTMLTemplate.from_filename(SCRIPT_DIRECTORY + 'issue.html')
 	html = issueTemplate.substitute(book=book, info='')
 	
 	#print html
 	return html
 
+
+
+
+def GetIssuesRange(volume):
+	ret = ''
+	
+	numIssues = len(volume.issues)
+	
+	if numIssues < 1:
+		return '-'
+		
+	elif numIssues == 1:
+		return volume.issues[0].Number
+		
+	else:
+		firstNum = volume.issues[0].Number
+		lastNum = volume.issues[-1].Number
+		
+		hasMillion = (lastNum == '1000000')
+		if hasMillion:
+			lastNum = volume.issues[-2].Number
+		
+		if firstNum != lastNum:
+			ret = firstNum + ' to ' + lastNum
+		else:
+			ret = firstNum
+		
+		if hasMillion:
+			ret += ' and 1.000.000'
+		
+		return ret
+
+def GetDuplicatedIssues(volume):
+	nums = set()
+	ret = []
+	
+	for book in volume.issues:
+		n = book.Number
+		if n in nums:
+			ret.append(n)
+		else:
+			nums.add(n)
+	
+	return ret
+
+def GetMissingIssues(volume):
+	nums = set()
+	
+	for book in volume.issues:
+		nums.add(ToInt(book.Number))
+	
+	nums.discard(0)
+	nums.discard(1000000)
+	
+	ret = []
+	next = 0
+	for n in sorted(nums):
+		if next != 0 and n > next:
+			if n > next + 2:
+				ret.append(str(next) + '-' + str(n-1))
+			elif n == next + 2:
+				ret.append(str(next) + ' ' + str(next + 1))
+			else:
+				ret.append(str(next))
+		next = n + 1
+	
+	return ret
+
+def GetReadPercentage(volume):
+	read = 0
+	for book in volume.issues:
+		read += ToInt(book.ReadPercentage)
+	read = float(read) / len(volume.issues)
+	
+	# Avoid 100% when missing only one page
+	if read < 99:
+		return int(round(read))
+	else:
+		return int(read)
+
+def GetFilesFormat(volume):
+	ret = set()
+	
+	for book in volume.issues:
+		ret.add(book.FileFormat)
+	
+	return sorted(ret)
+
+def GetRating(volume, field):
+	sum = 0
+	count = 0
+
+	for book in volume.issues:
+		r = getattr(book, field)
+		if r:
+			sum += float(r)
+			count += 1
+	
+	if count > 0:
+		return "%.1f" % (sum / count)
+	else:
+		return None
+	
 def GenerateHTMLForSeries(books):
 	db = DB()
 	
@@ -287,33 +166,41 @@ def GenerateHTMLForSeries(books):
 		s = Placeholder()
 		allSeries.append(s)
 		
-		s.name = series.name
-		s.showVolumeNames = (series.volumes.keys() != [''])
-		s.volumes = []
+		s.Name = series.name
+		s.ShowVolumeNames = (series.volumes.keys() != [''])
+		s.Volumes = []
+		s.NumIssues = 0
 		
 		for volumeKey in sorted(series.volumes.iterkeys()):
 			volume = series.volumes[volumeKey]
 			
 			v = Placeholder()
-			s.volumes.append(v)
+			s.Volumes.append(v)
 			
-			v.name = volume.name
-			v.cover = volume.issues[0].Cover
-			v.issues = volume.GetIssuesRange()
-			v.missingIssues = volume.GetMissingIssues()
-			v.duplicatedIssues = volume.GetDuplicatedIssues()
-			v.readPercentage = volume.GetReadPercentage()
+			v.Name = volume.name
+			v.Cover = volume.issues[0].Cover
+			v.NumIssues = len(volume.issues)
+			v.Issues = GetIssuesRange(volume)
+			v.MissingIssues = GetMissingIssues(volume)
+			v.DuplicatedIssues = GetDuplicatedIssues(volume)
+			v.ReadPercentage = GetReadPercentage(volume)
+			v.FilesFormat = GetFilesFormat(volume)
+			v.Rating = GetRating(volume, "Rating")
+			v.CommunityRating = GetRating(volume, "CommunityRating")
+			
+			s.NumIssues += v.NumIssues
 		
 		# Avoid look forever
 		if time.clock() > finishTime:
 			info.append('Stoped processing because it took too much time')
 			break
-
-	#seriesTemplate = tempita.HTMLTemplate.from_filename(_SCRIPT_DIRECTORY + 'series.tmpl')
+	
+	seriesTemplate = tempita.HTMLTemplate.from_filename(SCRIPT_DIRECTORY + 'series.html')
 	html = seriesTemplate.substitute(allSeries=allSeries, info=info)
 	
 	#print html
 	return html
+
 
 
 #@Name Series Info Panel
@@ -321,8 +208,7 @@ def GenerateHTMLForSeries(books):
 #@Enabled true
 #@Description Show information about selected series
 def SeriesHtmlInfoPanel(books):
-	# Cleanup old temps. I need to do this better.
-	DeleteOldTmpFiles()
+	InitBookWrapper(ComicRack)
 	
 	numBooks = len(books)
 	if numBooks < 1:
@@ -331,3 +217,4 @@ def SeriesHtmlInfoPanel(books):
 		return GenerateHTMLForIssue(books[0])
 	else:
 		return GenerateHTMLForSeries(books)
+

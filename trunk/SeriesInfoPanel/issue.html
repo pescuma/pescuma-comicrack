@@ -29,7 +29,7 @@
 	<tr>
 		<td valign="top" width="1px">
 			{{ if book.Cover }}
-				<img src="{{ book.Cover | url }}" border="1px" />
+				<img src="{{ book.Cover | url }}" height="300px" border="1px" />
 			{{ endif }}
 		</td>
 		<td valign="top">
@@ -37,14 +37,37 @@
 				<b>Date:</b> {{book.Year | '????'}}/{{book.Month | '??'}}<br />
 			{{ endif }}
 
-			<b>Read:</b> {{ book.ReadPercentage }}%<br />
+			<b>Read:</b> {{book.ReadPercentage}}%<br />
+			
+			<b>Format:</b>  {{book.FileFormat}}<br />
+			
+			<b>Pages:</b>  {{book.PageCount}}<br />
+			
+			{{ if book.Rating }}
+				<b>Rating:</b> {{ book.Rating }}<br />
+			{{ endif }}
+			
+			{{ if book.CommunityRating }}
+				<b>CommunityRating:</b> {{ book.CommunityRating }}<br />
+			{{ endif }}
 
 			<br />
+			
 			{{ if book.Title }}
 				<b>Title:</b> {{book.Title}}<br />
 			{{ endif }}
 			{{ if book.Summary }}
 				<b>Summary:</b> {{ html_quote(book.Summary).replace('\n', '<br />') | html }}<br />
+			{{ endif }}
+			
+			<br />
+			
+			{{ if book.Web }}
+				{{ if book.Web.startswith('http://www.comicvine.com') }}
+					<a href="{{book.Web}}">See in ComicVine</a><br />
+				{{ else }}
+					<a href="{{book.Web}}">Webpage</a><br />
+				{{ endif }}
 			{{ endif }}
 		</td>
 	</tr>
