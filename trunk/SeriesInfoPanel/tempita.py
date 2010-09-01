@@ -364,7 +364,7 @@ def html_quote(value, force=True):
     if value is None:
         return ''
     value = _cgi_escape(ToString(value))
-    return value
+    return value.replace('\n', '<br>')
 
 def url(v):
     return _urllib_quote(ToString(v))

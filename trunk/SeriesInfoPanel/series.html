@@ -1,60 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head></head>
+<body style="font-family: Calibri;">
+
 {{ if info }}
 <span style="font-style:italic;color:#BB5555">
 	{{ for i in info }}
 		{{ i }}<br />
 	{{ endfor }}
-</span>
+</span><br />
+<br />
 {{ endif }}
 
 {{ for series in allSeries }}
-	<h1>{{ series.Name | '<Unknown Series>' }}</h1>
-	
-	{{ if len(series.Volumes) > 1 }}
-		{{ series.NumIssues }} books<br />
-	{{ endif }}
-	
-	<table border="0px" cellspacing="20px">
-		{{ for volume in series.Volumes }}
+	<span style="font-weight: bold; font-size: 22px">Series: {{ series.Name | '<Unknown>' }}</span><br>
+
+	{{ for volume in series.Volumes }}
+		<table style="text-align: left; margin-top: 23px;" border="0" cellpadding="10" cellspacing="0">
 			<tr>
-				<td valign="top" width="1px">
+				<td valign="top" width="270px">
+					{{ if series.ShowVolumeNames }}
+						<span style="font-style: italic; font-weight: bold; font-size: 19px;">{{ volume.Name | '<Unknown Volume>' }}</span><br>
+						<br>
+					{{ endif }}
 					{{ if volume.Cover }}
-						<img src="{{ volume.Cover | url }}" height="120px" border="1px" />
+						<div style="text-align: center"><img src="{{ volume.Cover | url }}" width="283px" alt="Cover"></div>
 					{{ endif }}
 				</td>
-				<td valign="top">
-					{{ if series.ShowVolumeNames }}
-						<h2>Volume {{ volume.Name | '<Unknown>' }}</h2>
-					{{ endif }}
-					
-					{{ volume.NumIssues }} books<br />
-					
-					<b>Issues:</b> {{ volume.Issues }}<br />
-					
-					{{ if volume.MissingIssues }}
-						<b>Missing issues:</b> {{ ' '.join(volume.MissingIssues) }}<br />
-					{{ endif }}
-					
-					{{ if volume.DuplicatedIssues }}
-						<b>Duplicated issues:</b> {{ ' '.join(volume.DuplicatedIssues) }}<br />
-					{{ endif }}
-					
-					<b>Read:</b> {{ volume.ReadPercentage }}%<br />
-					
-					{{ if len(volume.FilesFormat) > 1 }}
-						<b>Formats:</b> {{ ", ".join(volume.FilesFormat) }}<br />
-					{{ else }}
-						<b>Format:</b> {{ volume.FilesFormat[0] }}<br />
-					{{ endif }}
-					
-					{{ if volume.Rating }}
-						<b>Rating:</b> {{ volume.Rating }}<br />
-					{{ endif }}
-					
-					{{ if volume.CommunityRating }}
-						<b>CommunityRating:</b> {{ volume.CommunityRating }}<br />
-					{{ endif }}
+				<td valign="top" width="300px">
+					<span style="font-size: 19px;">
+						{{ for pi in volume.PublishersImprints }}
+							{{ pi.Publisher | '<Unknown Publisher>' }} {{ if pi.Imprint }}({{ pi.Imprint }}){{ endif }}<br>
+						{{ endfor }}
+					</span>
+					{{ ", ".join(volume.FilesFormat) }}
+					<hr>
+					<table style="text-align: left; vertical-align: top; width: 100%; margin-top: 5px; " border="0" cellpadding="0" cellspacing="6">
+						<tr>
+							<td style="width: 144px; height: 24px; text-align: left;">
+								{{ if volume.Rating }}
+									{{ for i in range(float(volume.Rating)) }}<img src="{{ path }}rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+								{{ endif }}
+							</td>
+							<td style="width: 144px; height: 24px; text-align: right;">
+								{{ if volume.CommunityRating }}
+									{{ for i in range(float(volume.CommunityRating)) }}<img src="{{ path }}com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+								{{ endif }}
+							</td>
+						</tr>
+					</table>
+					<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
+						<tr>
+							<td style="width: 123px;  vertical-align: top;">Issues:</td>
+							<td style="vertical-align: top;">{{ volume.Issues }}</td>
+						</tr>
+						{{ if volume.MissingIssues }}
+							<tr>
+								<td style="width: 123px;  vertical-align: top;">Missing Issues:</td>
+								<td style="vertical-align: top; color: red;">{{ ' '.join(volume.MissingIssues) }}</td>
+							</tr>
+						{{ endif }}
+						{{ if volume.DuplicatedIssues }}
+							<tr>
+								<td style="width: 123px;  vertical-align: top;">Duplicated Issues:</td>
+								<td style="vertical-align: top;">{{ ' '.join(volume.DuplicatedIssues) }}</td>
+							</tr>
+						{{ endif }}
+						<tr>
+							<td style="width: 123px;  vertical-align: top;">Num of books:</td>
+							<td style="vertical-align: top;">{{ volume.NumIssues }}</td>
+						</tr>
+						<tr>
+							<td style="width: 123px;  vertical-align: top;">Read:</td>
+							<td style="vertical-align: top;">{{ volume.ReadPercentage }}%</td>
+						</tr>
+					</table>
 				</td>
 			</tr>
-		{{ endfor }}
-	</table>
+		</table>
+	{{ endfor }}
+	<br>
+	<br>
+	<br>
 {{ endfor }}
+
+</body>
+</html>

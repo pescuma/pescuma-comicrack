@@ -21,6 +21,7 @@ import sys
 import System
 import tempita
 import time
+import re
 
 from _utils import *
 from _db import *
@@ -28,11 +29,27 @@ from BookWrapper import *
 
 
 
+def GetTemplate(filename):
+	return tempita.HTMLTemplate.from_filename(SCRIPT_DIRECTORY + filename)
+
+
+
+
+def GenerateHTMLForNoComic():
+	issueTemplate = GetTemplate('nothing.html')
+	html = issueTemplate.substitute(info='', path=SCRIPT_DIRECTORY)
+	
+	#print html
+	return html
+
+
+
+
 def GenerateHTMLForIssue(book):
 	book = BookWrapper(book)
 	
-	issueTemplate = tempita.HTMLTemplate.from_filename(SCRIPT_DIRECTORY + 'issue.html')
-	html = issueTemplate.substitute(book=book, info='')
+	issueTemplate = GetTemplate('issue.html')
+	html = issueTemplate.substitute(book=book, info='', path=SCRIPT_DIRECTORY)
 	
 	#print html
 	return html
@@ -139,6 +156,49 @@ def GetRating(volume, field):
 		return "%.1f" % (sum / count)
 	else:
 		return None
+
+def GetPublishersImprints(volume):
+	ret = set()
+	
+	class PublisherImprint:
+		def __init__(self):
+			self.Publisher = ''
+			self.Imprint = ''
+		def __hash__(self):
+			return self.Publisher.__hash__() + self.Imprint.__hash__()
+		def __cmp__(self, other):
+			if self.Publisher != other.Publisher:
+				return -1 if self.Publisher < other.Publisher else 1
+			if self.Imprint != other.Imprint:
+				return -1 if self.Imprint < other.Imprint else 1
+			return 0
+	
+	for book in volume.issues:
+		pi = PublisherImprint()
+		pi.Publisher = book.Publisher
+		pi.Imprint = book.Imprint
+		if pi.Publisher or pi.Imprint:
+			ret.add(pi)
+	
+	return sorted(ret)
+
+def GetPublishers(volume):
+	ret = set()
+	
+	for book in volume.issues:
+		if book.Publisher:
+			ret.add(book.Publisher)
+	
+	return sorted(ret)
+
+def GetImprints(volume):
+	ret = set()
+	
+	for book in volume.issues:
+		if book.Imprint:
+			ret.add(book.Imprint)
+	
+	return sorted(ret)
 	
 def GenerateHTMLForSeries(books):
 	db = DB()
@@ -174,6 +234,17 @@ def GenerateHTMLForSeries(books):
 		for volumeKey in sorted(series.volumes.iterkeys()):
 			volume = series.volumes[volumeKey]
 			
+			# Sort by number
+			def ToFloat(x):
+				try:
+					return float(re.sub('[^0-9.]', '', x))
+				except:
+					try:
+						return float(re.sub('[^0-9]', '', x))
+					except:
+						return x
+			volume.issues = sorted(volume.issues, key=lambda book: ToFloat(book.Number))
+			
 			v = Placeholder()
 			s.Volumes.append(v)
 			
@@ -187,6 +258,9 @@ def GenerateHTMLForSeries(books):
 			v.FilesFormat = GetFilesFormat(volume)
 			v.Rating = GetRating(volume, "Rating")
 			v.CommunityRating = GetRating(volume, "CommunityRating")
+			v.PublishersImprints = GetPublishersImprints(volume)
+			v.Publishers = GetPublishers(volume)
+			v.Imprints = GetImprints(volume)
 			
 			s.NumIssues += v.NumIssues
 		
@@ -195,8 +269,8 @@ def GenerateHTMLForSeries(books):
 			info.append('Stoped processing because it took too much time')
 			break
 	
-	seriesTemplate = tempita.HTMLTemplate.from_filename(SCRIPT_DIRECTORY + 'series.html')
-	html = seriesTemplate.substitute(allSeries=allSeries, info=info)
+	seriesTemplate = GetTemplate('series.html')
+	html = seriesTemplate.substitute(allSeries=allSeries, info=info, path=SCRIPT_DIRECTORY)
 	
 	#print html
 	return html
@@ -207,12 +281,13 @@ def GenerateHTMLForSeries(books):
 #@Hook ComicInfoHtml
 #@Enabled true
 #@Description Show information about selected series
+#@Image SIP.png
 def SeriesHtmlInfoPanel(books):
 	InitBookWrapper(ComicRack)
 	
 	numBooks = len(books)
 	if numBooks < 1:
-		return ''
+		return GenerateHTMLForNoComic()
 	elif numBooks == 1:
 		return GenerateHTMLForIssue(books[0])
 	else:

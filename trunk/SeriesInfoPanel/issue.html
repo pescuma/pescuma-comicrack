@@ -1,74 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head></head>
+<body style="font-family: Calibri;">
+
 {{ if info }}
 <span style="font-style:italic;color:#BB5555">
 	{{ for i in info }}
 		{{ i }}<br />
 	{{ endfor }}
-</span>
+</span><br />
+<br />
 {{ endif }}
 
-<h1>
+<span style="font-weight: bold; font-size: 22px">
 	{{ book.Series | '<Unknown Series>' }} 
 	{{ if book.Volume }}
-		- Volume {{ book.Volume }}
-	{{ endif }}
-	{{ if book.Number }}
-		#{{ book.Number }} {{ if book.Count }}(of {{ book.Count }}){{ endif }}
-	{{ endif }}
-</h1>
-
-{{ if book.AlternateSeries }}
-	<h2>
-		{{ book.AlternateSeries }}
-		{{ if book.AlternateNumber }}
-			#{{ book.AlternateNumber }} {{ if book.AlternateCount }}(of {{ book.AlternateCount }}){{ endif }}
+		{{ if book.Volume < 1900 }}
+			v{{ book.Volume }}
+		{{ else }}
+			({{ book.Volume }})
 		{{ endif }}
-	</h2>
+		{{ if book.Number }}
+			&nbsp;&nbsp;&nbsp; #{{ book.Number }}{{ if book.Count }} of {{ book.Count }}{{ endif }}
+		{{ endif }}
+	{{ endif }}
+</span><br>
+<div style="font-weight: bold; font-size: 18px; margin-top: 1px">&nbsp;
+{{ if book.AlternateSeries }}
+	({{ book.AlternateSeries }}{{ if book.AlternateNumber }} #{{ book.AlternateNumber }}{{ if book.AlternateCount }} of {{ book.AlternateCount }}{{ endif }}{{ endif }})
 {{ endif }}
+</div>
 
-<table border="0px" cellspacing="20px">
+<table style="text-align: left; " border="0" cellpadding="10" cellspacing="0">
 	<tr>
-		<td valign="top" width="1px">
-			{{ if book.Cover }}
-				<img src="{{ book.Cover | url }}" height="300px" border="1px" />
-			{{ endif }}
-		</td>
-		<td valign="top">
-			{{ if book.Year or book.Month }}
-				<b>Date:</b> {{book.Year | '????'}}/{{book.Month | '??'}}<br />
-			{{ endif }}
-
-			<b>Read:</b> {{book.ReadPercentage}}%<br />
-			
-			<b>Format:</b>  {{book.FileFormat}}<br />
-			
-			<b>Pages:</b>  {{book.PageCount}}<br />
-			
-			{{ if book.Rating }}
-				<b>Rating:</b> {{ book.Rating }}<br />
-			{{ endif }}
-			
-			{{ if book.CommunityRating }}
-				<b>CommunityRating:</b> {{ book.CommunityRating }}<br />
-			{{ endif }}
-
-			<br />
-			
+		<td valign="top" width="270px">
 			{{ if book.Title }}
-				<b>Title:</b> {{book.Title}}<br />
+			<span style="font-style: italic; font-weight: bold;">{{book.Title}}</span><br>
+			<br>
 			{{ endif }}
 			{{ if book.Summary }}
-				<b>Summary:</b> {{ html_quote(book.Summary).replace('\n', '<br />') | html }}<br />
+			<span style="font-size: 11px; line-height: 14px; text-align: justify; font-family: Arial,Helvetica,sans;">{{ book.Summary }}</span><br>
+			<br>
 			{{ endif }}
-			
-			<br />
-			
-			{{ if book.Web }}
-				{{ if book.Web.startswith('http://www.comicvine.com') }}
-					<a href="{{book.Web}}">See in ComicVine</a><br />
-				{{ else }}
-					<a href="{{book.Web}}">Webpage</a><br />
-				{{ endif }}
+			{{ if book.Cover }}
+				<div style="text-align: center;"><img src="{{ book.Cover | url }}" width="283px" alt="Cover"></div>
 			{{ endif }}
+		</td>
+		<td valign="top" width="300px">
+			{{ if book.Publisher or book.Year or book.Month }}
+				<span style="font-size: 19px;">
+					{{ if book.Publisher }}{{book.Publisher}}{{ if book.Imprint }} ({{book.Imprint}}){{ endif }}{{ endif }}{{ if book.Publisher and (book.Year or book.Month) }}, {{ endif }}
+					{{ if book.Year or book.Month }}
+						{{book.Month | '??'}}/{{book.Year | '????'}}
+					{{ endif }}
+					<br>
+				</span>
+			{{ endif }}
+			{{book.FileFormat}}
+			<hr>
+			<table style="text-align: left; vertical-align: top; width: 100%; margin-top: 5px; " border="0" cellpadding="0" cellspacing="6">
+				<tr>
+					<td style="width: 144px; height: 24px; text-align: left;">
+						{{ if book.Rating }}
+							{{ for i in range(float(book.Rating)) }}<img src="{{ path }}rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+						{{ endif }}
+					</td>
+					<td style="width: 144px; height: 24px; text-align: right;">
+						{{ if book.CommunityRating }}
+							{{ for i in range(float(book.CommunityRating)) }}<img src="{{ path }}com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+						{{ endif }}
+					</td>
+				</tr>
+			</table>
+			<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Writer:</td>
+					<td style="vertical-align: top;">{{ book.Writer }}</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Penciller:</td>
+					<td style="vertical-align: top;">{{ book.Penciller }}</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Inker:</td>
+					<td style="vertical-align: top;">{{ book.Inker }}</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Colorist:</td>
+					<td style="vertical-align: top;">{{ book.Colorist }}</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Letterer:</td>
+					<td style="vertical-align: top;">{{ book.Letterer }}</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Cover Artist:</td>
+					<td style="vertical-align: top;">{{ book.CoverArtist }}</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Editor:</td>
+					<td style="vertical-align: top;">{{ book.Editor }}</td>
+				</tr>
+			</table>
+			<hr>
+			<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Genre:</td>
+					<td style="vertical-align: top;">{{ book.Genre }}</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Tags:</td>
+					<td style="vertical-align: top;">{{ book.Tags }}</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Characters:</td>
+					<td style="vertical-align: top;">{{ book.Characters }}</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Teams:</td>
+					<td style="vertical-align: top;">{{ book.Teams }}</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Locations:</td>
+					<td style="vertical-align: top;">{{ book.Locations }}</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Notes:</td>
+					<td style="vertical-align: top;">{{ book.Notes }}</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						{{ if book.Web }}
+							{{ if book.Web.startswith('http://www.comicvine.com') }}
+								<a href="{{book.Web}}">See in ComicVine</a><br />
+							{{ else }}
+								<a href="{{book.Web}}">Webpage</a><br />
+							{{ endif }}
+						{{ endif }}
+					</td>
+				</tr>
+			</table>
+			<hr>
 		</td>
 	</tr>
 </table>
+</body>
+</html>
