@@ -1,21 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head></head>
-<body style="font-family: Calibri;">
+<html><head></head>
+
+<body style="font-family: Calibri; width: 755px;">
 
 {{ if info }}
-<span style="font-style:italic;color:#BB5555">
+<span style="font-style: italic; color: rgb(187, 85, 85);">
 	{{ for i in info }}
-		{{ i }}<br />
+		{{ i }}<br>
 	{{ endfor }}
-</span><br />
-<br />
+</span><br>
+<br>
 {{ endif }}
 
-<span style="font-weight: bold; font-size: 22px">
-	{{ book.Series | '<Unknown Series>' }} 
+<span style="font-weight: bold; font-size: 22px;">
+	{{ book.Series | '<unknown series="">' }} 
 	{{ if book.Volume }}
-		{{ if book.Volume < 1900 }}
+		{{ if book.Volume &lt; 1900 }}
 			v{{ book.Volume }}
 		{{ else }}
 			({{ book.Volume }})
@@ -24,16 +24,18 @@
 			&nbsp;&nbsp;&nbsp; #{{ book.Number }}{{ if book.Count }} of {{ book.Count }}{{ endif }}
 		{{ endif }}
 	{{ endif }}
-</span><br>
-<div style="font-weight: bold; font-size: 18px; margin-top: 1px">&nbsp;
-{{ if book.AlternateSeries }}
-	({{ book.AlternateSeries }}{{ if book.AlternateNumber }} #{{ book.AlternateNumber }}{{ if book.AlternateCount }} of {{ book.AlternateCount }}{{ endif }}{{ endif }})
+</unknown></span><br>
+<div style="font-weight: bold; font-size: 18px; margin-top: 1px;">&nbsp;
+{{ if book.AlternateSeries }} ({{ book.AlternateSeries }}{{ if
+book.AlternateNumber }} #{{ book.AlternateNumber }}{{ if
+book.AlternateCount }} of {{ book.AlternateCount }}{{ endif }}{{ endif
+}})
 {{ endif }}
 </div>
 
-<table style="text-align: left; " border="0" cellpadding="10" cellspacing="0">
-	<tr>
-		<td valign="top" width="270px">
+<table style="text-align: left;" border="0" cellpadding="10" cellspacing="0">
+	<tbody><tr>
+		<td valign="top" width="270">
 			{{ if book.Title }}
 			<span style="font-style: italic; font-weight: bold;">{{book.Title}}</span><br>
 			<br>
@@ -43,37 +45,36 @@
 			<br>
 			{{ endif }}
 			{{ if book.Cover }}
-				<div style="text-align: center;"><img src="{{ book.Cover | url }}" width="283px" alt="Cover"></div>
+				<div style="text-align: center;"><img src="%7B%7B%20book.Cover%20%7C%20url%20%7D%7D" alt="Cover" width="283"></div>
 			{{ endif }}
 		</td>
-		<td valign="top" width="300px">
+		<td valign="top" width="300">
 			{{ if book.Publisher or book.Year or book.Month }}
 				<span style="font-size: 19px;">
-					{{ if book.Publisher }}{{book.Publisher}}{{ if book.Imprint }} ({{book.Imprint}}){{ endif }}{{ endif }}{{ if book.Publisher and (book.Year or book.Month) }}, {{ endif }}
-					{{ if book.Year or book.Month }}
-						{{book.Month | '??'}}/{{book.Year | '????'}}
-					{{ endif }}
-					<br>
+{{ if book.Publisher }}{{book.Publisher}}{{ if book.Imprint }}
+({{book.Imprint}}){{ endif }}{{ endif }}{{ if book.Publisher and
+(book.Year or book.Month) }}, {{ endif }} {{ if book.Year or book.Month
+}} {{book.Month | '??'}}/{{book.Year | '????'}} {{ endif }} <br>
 				</span>
 			{{ endif }}
 			{{book.FileFormat}}
 			<hr>
-			<table style="text-align: left; vertical-align: top; width: 100%; margin-top: 5px; " border="0" cellpadding="0" cellspacing="6">
-				<tr>
+			<table style="text-align: left; vertical-align: top; width: 100%; margin-top: 5px;" border="0" cellpadding="0" cellspacing="6">
+				<tbody><tr>
 					<td style="width: 144px; height: 24px; text-align: left;">
 						{{ if book.Rating }}
-							{{ for i in range(float(book.Rating)) }}<img src="{{ path }}rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+							{{ for i in range(float(book.Rating)) }}<img src="%7B%7B%20path%20%7D%7Drating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
 						{{ endif }}
 					</td>
 					<td style="width: 144px; height: 24px; text-align: right;">
 						{{ if book.CommunityRating }}
-							{{ for i in range(float(book.CommunityRating)) }}<img src="{{ path }}com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+							{{ for i in range(float(book.CommunityRating)) }}<img src="%7B%7B%20path%20%7D%7Dcom_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
 						{{ endif }}
 					</td>
 				</tr>
-			</table>
-			<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
-				<tr>
+			</tbody></table>
+			<table style="text-align: left; vertical-align: top; width: 100%;" border="0" cellpadding="0" cellspacing="6">
+				<tbody><tr>
 					<td style="width: 93px; vertical-align: top;">Writer:</td>
 					<td style="vertical-align: top;">{{ book.Writer }}</td>
 				</tr>
@@ -101,10 +102,10 @@
 					<td style="width: 93px; vertical-align: top;">Editor:</td>
 					<td style="vertical-align: top;">{{ book.Editor }}</td>
 				</tr>
-			</table>
+			</tbody></table>
 			<hr>
-			<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
-				<tr>
+			<table style="text-align: left; vertical-align: top; width: 100%;" border="0" cellpadding="0" cellspacing="6">
+				<tbody><tr>
 					<td style="width: 93px; vertical-align: top;">Genre:</td>
 					<td style="vertical-align: top;">{{ book.Genre }}</td>
 				</tr>
@@ -124,25 +125,21 @@
 					<td style="width: 93px; vertical-align: top;">Locations:</td>
 					<td style="vertical-align: top;">{{ book.Locations }}</td>
 				</tr>
-				<tr>
-					<td style="width: 93px; vertical-align: top;">Notes:</td>
-					<td style="vertical-align: top;">{{ book.Notes }}</td>
-				</tr>
+				
 				<tr>
 					<td colspan="2">
 						{{ if book.Web }}
 							{{ if book.Web.startswith('http://www.comicvine.com') }}
-								<a href="{{book.Web}}">See in ComicVine</a><br />
+								<a href="%7B%7Bbook.Web%7D%7D">See in ComicVine</a><br>
 							{{ else }}
-								<a href="{{book.Web}}">Webpage</a><br />
+								<a href="%7B%7Bbook.Web%7D%7D">Webpage</a><br>
 							{{ endif }}
 						{{ endif }}
 					</td>
 				</tr>
-			</table>
+			</tbody></table>
 			<hr>
 		</td>
 	</tr>
-</table>
-</body>
-</html>
+</tbody></table><br><table style="text-align: left; vertical-align: top; width: 100%;" border="0" cellpadding="0" cellspacing="6"><tbody><tr><td style="width: 93px; vertical-align: top;">Notes:</td><td style="vertical-align: top;">{{ book.Notes }}</td></tr></tbody></table><br>
+</body></html>
