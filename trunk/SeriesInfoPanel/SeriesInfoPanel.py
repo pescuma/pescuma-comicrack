@@ -64,6 +64,7 @@ def GenerateHTMLForIssue(book):
 	issueTemplate = GetTemplate('issue.html')
 	
 	vars = defaultVars.copy()
+	vars['book'] = book
 	vars.addAttributes(book)
 	
 	html = issueTemplate.substitute(vars)

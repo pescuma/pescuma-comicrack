@@ -39,8 +39,15 @@ def ToInt(v):
 	else:
 		return 0
 
-def ResizeImage(image, height):
-	result = System.Drawing.Bitmap(image.Width * height / image.Height, height)
+def ResizeImage(image, width, height):
+	if width <= 0 and height <= 0:
+		return image
+	elif width <= 0:
+		width = image.Width * height / image.Height
+	elif height <= 0:
+		height = image.Height * width / image.Width
+	
+	result = System.Drawing.Bitmap(width, height)
 	
 	graphics = System.Drawing.Graphics.FromImage(result)
 	graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality

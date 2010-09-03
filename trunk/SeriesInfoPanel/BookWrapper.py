@@ -95,16 +95,16 @@ class BookWrapper:
 			ret = ''
 		return ret
 	
-	def GetCover(self, height = 0):
+	def GetCover(self, width = 0, height = 0):
 		coverIndex = 0 
 		if self.raw.FrontCoverPageIndex > 0:
 			coverIndex = self.raw.FrontCoverPageIndex
-		return self.GetPage(coverIndex, height)
+		return self.GetPage(coverIndex, width, height)
 	
-	def GetPage(self, page, height = 0):
+	def GetPage(self, page, width = 0, height = 0):
 		global _oldTmpFiles
 		
-		hash = str(page) + '_' + str(height)
+		hash = str(page) + '_' + str(width) + '_' + str(height)
 		
 		if hash in self._pages:
 			return self._pages[hash]
@@ -124,8 +124,8 @@ class BookWrapper:
 		#print imageFile
 		
 		try:
-			if height > 0:
-				image = ResizeImage(image, height)
+			if width > 0 or height > 0:
+				image = ResizeImage(image, width, height)
 			
 			image.Save(imageFile, System.Drawing.Imaging.ImageFormat.Jpeg)
 			
