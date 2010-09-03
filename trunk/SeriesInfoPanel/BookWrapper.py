@@ -58,13 +58,23 @@ class BookWrapper:
 	
 	def __init__(self, book):
 		self.raw = book
-		self._cover = {}
+		self._pages = {}
 	
-	def _get(self, name):
+	def __dir__(self):
+		ret = set()
+		ret.update(set(self.__dict__))
+		ret.update(dir(self.raw))
+		ret.add('Cover')
+		return list(ret)
+	
+	def _safeget(self, name):
 		try:
-			return ToString(getattr(self.raw, name)).strip()
+			return self._get(name)
 		except:
 			return ''
+	
+	def _get(self, name):
+		return ToString(getattr(self.raw, name)).strip()
 	
 	def __getattr__(self, name):
 		if name in self._dontConvert:
@@ -77,44 +87,52 @@ class BookWrapper:
 			emptVal = self._emptyVals[name]
 		else:
 			emptVal = ''
-			
+		
 		ret = self._get(name)
 		if ret == '' or ret == emptVal:
-			ret = self._get('Shadow' + name)
+			ret = self._safeget('Shadow' + name)
 		if ret == '' or ret == emptVal:
 			ret = ''
 		return ret
 	
 	def GetCover(self, height = 0):
-		global _oldTmpFiles
-		
-		if height in self._cover:
-			return self._cover[height]
-		
 		coverIndex = 0 
 		if self.raw.FrontCoverPageIndex > 0:
 			coverIndex = self.raw.FrontCoverPageIndex
-		image = _ComicRack.App.GetComicPage(self.raw, coverIndex)
+		return self.GetPage(coverIndex, height)
+	
+	def GetPage(self, page, height = 0):
+		global _oldTmpFiles
 		
+		hash = str(page) + '_' + str(height)
+		
+		if hash in self._pages:
+			return self._pages[hash]
+		
+		self._pages[hash] = ''
+		
+		image = _ComicRack.App.GetComicPage(self.raw, page)
 		if image is None:
-			self._cover = ''
 			return ''
 
 		tmpFile = System.IO.Path.GetTempFileName()
 		_oldTmpFiles.append(tmpFile)
 
 		# We need a jpg
-		coverFile = tmpFile + '.jpg'
-		_oldTmpFiles.append(coverFile)
-		#print coverFile
+		imageFile = tmpFile + '.jpg'
+		_oldTmpFiles.append(imageFile)
+		#print imageFile
 		
 		try:
 			if height > 0:
 				image = ResizeImage(image, height)
-			image.Save(coverFile, System.Drawing.Imaging.ImageFormat.Jpeg)
-			self._cover[height] = coverFile
-			return coverFile
+			
+			image.Save(imageFile, System.Drawing.Imaging.ImageFormat.Jpeg)
+			
+			self._pages[hash] = imageFile
+			
+			return imageFile
+			
 		except Exception,e:
 			print '[SeriesInfoPanel] Exception when saving image: ', e
 			return ''
-

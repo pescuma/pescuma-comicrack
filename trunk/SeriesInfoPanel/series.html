@@ -13,8 +13,8 @@
 {{ endif }}
 
 {{ for series in allSeries }}
-	<span style="font-weight: bold; font-size: 22px">Series: {{ series.Name | '<Unknown>' }}</span><br>
-
+	<span style="font-weight: bold; font-size: 22px">{{ if len(series.Formats) == 1 }}{{ series.Formats[0] }}{{ else }}Series{{ endif }}: {{ series.Name | '<Unknown>' }}</span><br>
+	
 	{{ for volume in series.Volumes }}
 		<table style="text-align: left; margin-top: 23px;" border="0" cellpadding="10" cellspacing="0">
 			<tr>
@@ -38,14 +38,10 @@
 					<table style="text-align: left; vertical-align: top; width: 100%; margin-top: 5px; " border="0" cellpadding="0" cellspacing="6">
 						<tr>
 							<td style="width: 144px; height: 24px; text-align: left;">
-								{{ if volume.Rating }}
-									{{ for i in range(float(volume.Rating)) }}<img src="{{ path }}rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
-								{{ endif }}
+								{{ for i in countTo(volume.Rating) }}<img src="{{ path }}rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
 							</td>
 							<td style="width: 144px; height: 24px; text-align: right;">
-								{{ if volume.CommunityRating }}
-									{{ for i in range(float(volume.CommunityRating)) }}<img src="{{ path }}com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
-								{{ endif }}
+								{{ for i in countTo(volume.CommunityRating) }}<img src="{{ path }}com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
 							</td>
 						</tr>
 					</table>

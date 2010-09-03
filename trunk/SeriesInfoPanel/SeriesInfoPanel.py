@@ -26,6 +26,19 @@ import re
 from _utils import *
 from _db import *
 from BookWrapper import *
+from SmartDict import *
+
+
+def countTo(num):
+	try:
+		return range(round(float(num)))
+	except:
+		return []
+
+defaultVars = SmartDict()
+defaultVars['info'] = ''
+defaultVars['countTo'] = countTo
+defaultVars['path'] = SCRIPT_DIRECTORY
 
 
 
@@ -37,7 +50,7 @@ def GetTemplate(filename):
 
 def GenerateHTMLForNoComic():
 	issueTemplate = GetTemplate('nothing.html')
-	html = issueTemplate.substitute(info='', path=SCRIPT_DIRECTORY)
+	html = issueTemplate.substitute(defaultVars)
 	
 	#print html
 	return html
@@ -49,7 +62,11 @@ def GenerateHTMLForIssue(book):
 	book = BookWrapper(book)
 	
 	issueTemplate = GetTemplate('issue.html')
-	html = issueTemplate.substitute(book=book, info='', path=SCRIPT_DIRECTORY)
+	
+	vars = defaultVars.copy()
+	vars.addAttributes(book)
+	
+	html = issueTemplate.substitute(vars)
 	
 	#print html
 	return html
@@ -199,7 +216,18 @@ def GetImprints(volume):
 			ret.add(book.Imprint)
 	
 	return sorted(ret)
+
+def GetFormats(volume):
+	ret = set()
 	
+	for book in volume.issues:
+		if book.Format:
+			ret.add(book.Format)
+		else:
+			ret.add('Series')
+	
+	return sorted(ret)
+
 def GenerateHTMLForSeries(books):
 	db = DB()
 	
@@ -230,6 +258,7 @@ def GenerateHTMLForSeries(books):
 		s.ShowVolumeNames = (series.volumes.keys() != [''])
 		s.Volumes = []
 		s.NumIssues = 0
+		s.Formats = set()
 		
 		for volumeKey in sorted(series.volumes.iterkeys()):
 			volume = series.volumes[volumeKey]
@@ -261,8 +290,12 @@ def GenerateHTMLForSeries(books):
 			v.PublishersImprints = GetPublishersImprints(volume)
 			v.Publishers = GetPublishers(volume)
 			v.Imprints = GetImprints(volume)
+			v.Formats = GetFormats(volume)
 			
+			s.Formats.update(v.Formats)
 			s.NumIssues += v.NumIssues
+		
+		s.Formats = sorted(s.Formats)
 		
 		# Avoid look forever
 		if time.clock() > finishTime:
@@ -270,7 +303,11 @@ def GenerateHTMLForSeries(books):
 			break
 	
 	seriesTemplate = GetTemplate('series.html')
-	html = seriesTemplate.substitute(allSeries=allSeries, info=info, path=SCRIPT_DIRECTORY)
+
+	vars = defaultVars.copy()
+	vars['allSeries'] = allSeries
+	
+	html = seriesTemplate.substitute(vars)
 	
 	#print html
 	return html

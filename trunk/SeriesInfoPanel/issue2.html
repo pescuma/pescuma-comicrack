@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head></head>
+<body style="font-family: Calibri;">
+
+<span style="font-weight: bold; font-size: 22px">
+	$Series$ ($Volume$) &nbsp;&nbsp;&nbsp; #$Number$ of $Count$
+</span><br>
+<div style="font-weight: bold; font-size: 18px; margin-top: 1px">&nbsp;
+	($AlternateSeries$ #$AlternateNumber$ of $AlternateCount$)
+</div>
+
+<table style="text-align: left; " border="0" cellpadding="10" cellspacing="0">
+	<tr>
+		<td valign="top" width="270px">
+			<span style="font-style: italic; font-weight: bold;">$Title$</span><br>
+			<br>
+			<span style="font-size: 11px; line-height: 14px; text-align: justify; font-family: Arial,Helvetica,sans;">$Summary$</span><br>
+			<br>
+				<div style="text-align: center;"><img src="$Cover | url$" width="283px" alt="Cover"></div>
+		</td>
+		<td valign="top" width="300px">
+			<span style="font-size: 19px;">
+				$Publisher$ ($Imprint$), $Month$/$Year$
+				<br>
+			</span>
+			$FileFormat$
+			<hr>
+			<table style="text-align: left; vertical-align: top; width: 100%; margin-top: 5px; " border="0" cellpadding="0" cellspacing="6">
+				<tr>
+					<td style="width: 144px; height: 24px; text-align: left;">
+						{{ for i in countTo(Rating) }}<img src="$path$rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+					</td>
+					<td style="width: 144px; height: 24px; text-align: right;">
+						{{ for i in countTo(CommunityRating) }}<img src="$path$com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+					</td>
+				</tr>
+			</table>
+			<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Writer:</td>
+					<td style="vertical-align: top;">$Writer$</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Penciller:</td>
+					<td style="vertical-align: top;">$Penciller$</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Inker:</td>
+					<td style="vertical-align: top;">$Inker$</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Colorist:</td>
+					<td style="vertical-align: top;">$Colorist$</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Letterer:</td>
+					<td style="vertical-align: top;">$Letterer$</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Cover Artist:</td>
+					<td style="vertical-align: top;">$CoverArtist$</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Editor:</td>
+					<td style="vertical-align: top;">$Editor$</td>
+				</tr>
+			</table>
+			<hr>
+			<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Genre:</td>
+					<td style="vertical-align: top;">$Genre$</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Tags:</td>
+					<td style="vertical-align: top;">$Tags$</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Characters:</td>
+					<td style="vertical-align: top;">$Characters$</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Teams:</td>
+					<td style="vertical-align: top;">$Teams$</td>
+				</tr>
+				<tr>
+					<td style="width: 93px; vertical-align: top;">Locations:</td>
+					<td style="vertical-align: top;">$Locations$</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						{{ if Web }}<a href="$Web$">Webpage</a>{{ endif }}
+					</td>
+				</tr>
+			</table>
+			<hr>
+		</td>
+	</tr>
+</table>
+<br>
+<table style="text-align: left; vertical-align: top; width: 100%;" border="0" cellpadding="0" cellspacing="6">
+	<tr>
+		<td style="width: 93px; vertical-align: top;">Notes:</td>
+		<td style="vertical-align: top;">$Notes$</td>
+	</tr>
+</table>
+</body>
+</html>

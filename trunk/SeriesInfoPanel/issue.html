@@ -13,128 +13,120 @@
 {{ endif }}
 
 <span style="font-weight: bold; font-size: 22px">
-	{{ book.Series | '<Unknown Series>' }} 
-	{{ if book.Volume }}
-		{{ if book.Volume < 1900 }}
-			v{{ book.Volume }}
+	{{ Series | '<Unknown Series>' }} 
+	{{ if Volume }}
+		{{ if Volume < 1900 }}
+			v{{ Volume }}
 		{{ else }}
-			({{ book.Volume }})
+			({{ Volume }})
 		{{ endif }}
-		{{ if book.Number }}
-			&nbsp;&nbsp;&nbsp; #{{ book.Number }}{{ if book.Count }} of {{ book.Count }}{{ endif }}
+		{{ if Number }}
+			&nbsp;&nbsp;&nbsp; #{{ Number }}{{ if Count }} of {{ Count }}{{ endif }}
 		{{ endif }}
 	{{ endif }}
 </span><br>
 <div style="font-weight: bold; font-size: 18px; margin-top: 1px">&nbsp;
-{{ if book.AlternateSeries }}
-	({{ book.AlternateSeries }}{{ if book.AlternateNumber }} #{{ book.AlternateNumber }}{{ if book.AlternateCount }} of {{ book.AlternateCount }}{{ endif }}{{ endif }})
+{{ if AlternateSeries }}
+	({{ AlternateSeries }}{{ if AlternateNumber }} #{{ AlternateNumber }}{{ if AlternateCount }} of {{ AlternateCount }}{{ endif }}{{ endif }})
 {{ endif }}
 </div>
 
 <table style="text-align: left; " border="0" cellpadding="10" cellspacing="0">
 	<tr>
 		<td valign="top" width="270px">
-			{{ if book.Title }}
-			<span style="font-style: italic; font-weight: bold;">{{book.Title}}</span><br>
+			{{ if Title }}
+			<span style="font-style: italic; font-weight: bold;">{{Title}}</span><br>
 			<br>
 			{{ endif }}
-			{{ if book.Summary }}
-			<span style="font-size: 11px; line-height: 14px; text-align: justify; font-family: Arial,Helvetica,sans;">{{ book.Summary }}</span><br>
+			{{ if Summary }}
+			<span style="font-size: 11px; line-height: 14px; text-align: justify; font-family: Arial,Helvetica,sans;">{{ Summary }}</span><br>
 			<br>
 			{{ endif }}
-			{{ if book.Cover }}
-				<div style="text-align: center;"><img src="{{ book.Cover | url }}" width="283px" alt="Cover"></div>
+			{{ if Cover }}
+				<div style="text-align: center;"><img src="{{ Cover | url }}" width="283px" alt="Cover"></div>
 			{{ endif }}
 		</td>
 		<td valign="top" width="300px">
-			{{ if book.Publisher or book.Year or book.Month }}
+			{{ if Publisher or Year or Month }}
 				<span style="font-size: 19px;">
-					{{ if book.Publisher }}{{book.Publisher}}{{ if book.Imprint }} ({{book.Imprint}}){{ endif }}{{ endif }}{{ if book.Publisher and (book.Year or book.Month) }}, {{ endif }}
-					{{ if book.Year or book.Month }}
-						{{book.Month | '??'}}/{{book.Year | '????'}}
+					{{ if Publisher }}{{Publisher}}{{ if Imprint }} ({{Imprint}}){{ endif }}{{ endif }}{{ if Publisher and (Year or Month) }}, {{ endif }}
+					{{ if Year or Month }}
+						{{Month | '??'}}/{{Year | '????'}}
 					{{ endif }}
 					<br>
 				</span>
 			{{ endif }}
-			{{book.FileFormat}}
+			{{FileFormat}}
 			<hr>
 			<table style="text-align: left; vertical-align: top; width: 100%; margin-top: 5px; " border="0" cellpadding="0" cellspacing="6">
 				<tr>
 					<td style="width: 144px; height: 24px; text-align: left;">
-						{{ if book.Rating }}
-							{{ for i in range(float(book.Rating)) }}<img src="{{ path }}rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
-						{{ endif }}
+						{{ for i in countTo(Rating) }}<img src="{{ path }}rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
 					</td>
 					<td style="width: 144px; height: 24px; text-align: right;">
-						{{ if book.CommunityRating }}
-							{{ for i in range(float(book.CommunityRating)) }}<img src="{{ path }}com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
-						{{ endif }}
+						{{ for i in countTo(CommunityRating) }}<img src="{{ path }}com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
 					</td>
 				</tr>
 			</table>
 			<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
 				<tr>
 					<td style="width: 93px; vertical-align: top;">Writer:</td>
-					<td style="vertical-align: top;">{{ book.Writer }}</td>
+					<td style="vertical-align: top;">{{ Writer }}</td>
 				</tr>
 				<tr>
 					<td style="width: 93px; vertical-align: top;">Penciller:</td>
-					<td style="vertical-align: top;">{{ book.Penciller }}</td>
+					<td style="vertical-align: top;">{{ Penciller }}</td>
 				</tr>
 				<tr>
 					<td style="width: 93px; vertical-align: top;">Inker:</td>
-					<td style="vertical-align: top;">{{ book.Inker }}</td>
+					<td style="vertical-align: top;">{{ Inker }}</td>
 				</tr>
 				<tr>
 					<td style="width: 93px; vertical-align: top;">Colorist:</td>
-					<td style="vertical-align: top;">{{ book.Colorist }}</td>
+					<td style="vertical-align: top;">{{ Colorist }}</td>
 				</tr>
 				<tr>
 					<td style="width: 93px; vertical-align: top;">Letterer:</td>
-					<td style="vertical-align: top;">{{ book.Letterer }}</td>
+					<td style="vertical-align: top;">{{ Letterer }}</td>
 				</tr>
 				<tr>
 					<td style="width: 93px; vertical-align: top;">Cover Artist:</td>
-					<td style="vertical-align: top;">{{ book.CoverArtist }}</td>
+					<td style="vertical-align: top;">{{ CoverArtist }}</td>
 				</tr>
 				<tr>
 					<td style="width: 93px; vertical-align: top;">Editor:</td>
-					<td style="vertical-align: top;">{{ book.Editor }}</td>
+					<td style="vertical-align: top;">{{ Editor }}</td>
 				</tr>
 			</table>
 			<hr>
 			<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
 				<tr>
 					<td style="width: 93px; vertical-align: top;">Genre:</td>
-					<td style="vertical-align: top;">{{ book.Genre }}</td>
+					<td style="vertical-align: top;">{{ Genre }}</td>
 				</tr>
 				<tr>
 					<td style="width: 93px; vertical-align: top;">Tags:</td>
-					<td style="vertical-align: top;">{{ book.Tags }}</td>
+					<td style="vertical-align: top;">{{ Tags }}</td>
 				</tr>
 				<tr>
 					<td style="width: 93px; vertical-align: top;">Characters:</td>
-					<td style="vertical-align: top;">{{ book.Characters }}</td>
+					<td style="vertical-align: top;">{{ Characters }}</td>
 				</tr>
 				<tr>
 					<td style="width: 93px; vertical-align: top;">Teams:</td>
-					<td style="vertical-align: top;">{{ book.Teams }}</td>
+					<td style="vertical-align: top;">{{ Teams }}</td>
 				</tr>
 				<tr>
 					<td style="width: 93px; vertical-align: top;">Locations:</td>
-					<td style="vertical-align: top;">{{ book.Locations }}</td>
-				</tr>
-				<tr>
-					<td style="width: 93px; vertical-align: top;">Notes:</td>
-					<td style="vertical-align: top;">{{ book.Notes }}</td>
+					<td style="vertical-align: top;">{{ Locations }}</td>
 				</tr>
 				<tr>
 					<td colspan="2">
-						{{ if book.Web }}
-							{{ if book.Web.startswith('http://www.comicvine.com') }}
-								<a href="{{book.Web}}">See in ComicVine</a><br />
+						{{ if Web }}
+							{{ if Web.startswith('http://www.comicvine.com') }}
+								<a href="{{Web}}">See in ComicVine</a><br />
 							{{ else }}
-								<a href="{{book.Web}}">Webpage</a><br />
+								<a href="{{Web}}">Webpage</a><br />
 							{{ endif }}
 						{{ endif }}
 					</td>
@@ -148,7 +140,7 @@
 <table style="text-align: left; vertical-align: top; width: 100%;" border="0" cellpadding="0" cellspacing="6">
 	<tr>
 		<td style="width: 93px; vertical-align: top;">Notes:</td>
-		<td style="vertical-align: top;">{{ book.Notes }}</td>
+		<td style="vertical-align: top;">{{ Notes }}</td>
 	</tr>
 </table>
 </body>

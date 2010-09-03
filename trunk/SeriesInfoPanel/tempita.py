@@ -34,7 +34,7 @@ import sys
 from _looper import looper
 
 
-token_re = re.compile(r'\{\{|\}\}')
+token_re = re.compile(r'\{\{|\}\}|(?<!\$)\$(?!\$)')
 in_re = re.compile(r'\s+in\s+')
 var_re = re.compile(r'^[a-z_][a-z0-9_]*$', re.I)
 
@@ -475,20 +475,28 @@ def lex(s, name=None, trim_whitespace=True, line_offset=0):
     for match in token_re.finditer(s):
         expr = match.group(0)
         pos = find_position(s, match.end(), line_offset)
-        if expr == '{{' and in_expr:
-            raise TemplateError('{{ inside expression', position=pos,
-                                name=name)
-        elif expr == '}}' and not in_expr:
-            raise TemplateError('}} outside expression', position=pos,
-                                name=name)
-        part = s[last:match.start()]
+        
         if expr == '{{':
+            if in_expr:
+                raise TemplateError('{{ inside expression', position=pos,
+                                    name=name)
+            in_expr = True
+        elif expr == '}}':
+            if not in_expr:
+                raise TemplateError('}} outside expression', position=pos,
+                                    name=name)
+            in_expr = False
+        else:
+            in_expr = not in_expr
+        
+        part = s[last:match.start()]
+        part = part.replace('$$', '$')
+        if in_expr:
             if part:
                 chunks.append(part)
-            in_expr = True
         else:
             chunks.append((part.strip(), last_pos))
-            in_expr = False
+        
         last = match.end()
         last_pos = pos
     if in_expr:
