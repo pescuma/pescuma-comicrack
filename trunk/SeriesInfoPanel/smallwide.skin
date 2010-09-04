@@ -1,0 +1,4 @@
+name = Small Wide
+canEditFields = 1
+seriesFields = Issues|MissingIssues|DuplicatedIssues|NumIssues|ReadPercentage|FilesFormat
+issueFields = Title|Summary|-|Writer|Penciller|Inker|Colorist|Letterer|CoverArtist|Editor|-|Genre|Tags|Characters|Teams|Locations|Web
