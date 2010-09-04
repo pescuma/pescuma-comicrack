@@ -55,6 +55,16 @@ class BookWrapper:
 		'CommunityRating' : '0.0'
 		}
 	_dontConvert = set([ 'Pages' ])
+	_getterFields = set([ 
+		'Cover',  
+		'FullName', 
+		'FullSeries', 
+		'FullNumber',
+		'FullAlternateName',
+		'FullAlternateNumber',
+		'FullPublisher',
+		'Date'
+		])
 	
 	def __init__(self, book):
 		self.raw = book
@@ -64,7 +74,7 @@ class BookWrapper:
 		ret = set()
 		ret.update(set(self.__dict__))
 		ret.update(dir(self.raw))
-		ret.add('Cover')
+		ret.update(self._getterFields)
 		return list(ret)
 	
 	def _safeget(self, name):
@@ -80,8 +90,9 @@ class BookWrapper:
 		if name in self._dontConvert:
 			return getattr(self.raw, name)
 		
-		if name == 'Cover':
-			return self.GetCover()
+		if name in self._getterFields:
+			getter = getattr(self, 'Get' + name)
+			return getter()
 		
 		if name in self._emptyVals:
 			emptVal = self._emptyVals[name]
@@ -136,3 +147,24 @@ class BookWrapper:
 		except Exception,e:
 			print '[SeriesInfoPanel] Exception when saving image: ', e
 			return ''
+	
+	def GetFullName(self):
+		return CreateFullName(self.Series, self.Volume, self.Number, self.Count)
+	
+	def GetFullNumber(self):
+		return CreateFullNumber(self.Number, self.Count)
+	
+	def GetFullSeries(self):
+		return CreateFullSeries(self.Series, self.Volume)
+	
+	def GetFullAlternateName(self):
+		return CreateFullAlternateName(self.AlternateSeries, self.AlternateNumber, self.AlternateCount)
+	
+	def GetFullAlternateNumber(self):
+		return CreateFullNumber(self.AlternateNumber, self.AlternateCount)
+	
+	def GetFullPublisher(self):
+		return CreateFullPublisher(self.Publisher, self.Imprint)
+	
+	def GetDate(self):
+		return CreateDate(self.Month, self.Year)

@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<body style="font-family: Calibri; background-color: #f0f0f0; margin: 0; padding: 0;">
+
+{{ if info }}
+<span style="font-style:italic;color:#BB5555">
+	{{ for i in info }}
+		{{ i }}<br />
+	{{ endfor }}
+</span><br />
+<br />
+{{ endif }}
+
+{{ for series in allSeries }}
+	{{ for volume in series.Volumes }}
+		<table style="text-align: left" width="100%" border="0" cellpadding="5" cellspacing="0">
+			<tr>
+				<td valign="top" width="1px">
+					{{ if volume.Cover }}
+						<div style="text-align: center"><img src="$volume.Cover | url$" width="100px" alt="Cover"></div>
+					{{ endif }}
+				</td>
+				<td valign="top">
+					<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="2">
+						<tr>
+							<td style="width: 100%; text-align: left;">
+								<span style="font-weight: bold; font-size: 21px">$'/'.join(volume.Formats)$: $volume.FullName$</span>
+								{{ if volume.FullPublishers }}<span style="font-size: 19px;">&nbsp;&nbsp;&nbsp;&nbsp;$' / '.join(volume.FullPublishers)$</span>{{ endif }}
+							</td>
+							<td style="width: 144px; text-align: left;">
+								{{ for i in range(volume.Rating) }}<img src="$path$rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+							</td>
+							<td style="width: 144px; text-align: right;">
+								{{ for i in range(volume.CommunityRating) }}<img src="$path$com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+							</td>
+						</tr>
+					</table>
+					<table style="text-align: left; vertical-align: top; width: 100%; margin-left: 5px; margin-top: 5px" border="0" cellpadding="0" cellspacing="2">
+					{{ for field in config.fields }}
+						{{ if field == 'FirstPages' }}
+						{{ elif field == 'Cover' }}
+						{{ elif field == '-' }}
+							</table>
+							<hr>
+							<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
+						{{ elif field == 'MissingIssues' }}
+							{{ if volume.MissingIssues }}
+								<tr>
+									<td style="width: 123px;  vertical-align: top;">Missing Issues:</td>
+									<td style="vertical-align: top; color: red;">$' '.join(volume.MissingIssues)$</td>
+								</tr>
+							{{ endif }}
+						{{ elif field == 'DuplicatedIssues' }}
+							{{ if volume.DuplicatedIssues }}
+								<tr>
+									<td style="width: 123px;  vertical-align: top;">Duplicated Issues:</td>
+									<td style="vertical-align: top;">$' '.join(volume.DuplicatedIssues)$</td>
+								</tr>
+							{{ endif }}
+						{{ elif field == 'ReadPercentage' }}
+							<tr>
+								<td style="width: 123px;  vertical-align: top;">Read:</td>
+								<td style="vertical-align: top;">$volume.ReadPercentage$%</td>
+							</tr>
+						{{ else }}
+							{{ if getattr(volume, field) }}
+								<tr>
+									<td style="width: 123px; vertical-align: top;">$field | translate$:</td>
+									<td style="vertical-align: top;">
+										{{ if isinstance(getattr(volume, field), list) }}
+											$', '.join(getattr(volume, field))$
+										{{ else }}
+											$getattr(volume, field)$
+										{{ endif }}
+									</td>
+								</tr>
+							{{ endif }}
+						{{ endif }}
+					{{ endfor }}
+					</table>
+				</td>
+			</tr>
+		</table>
+	{{ endfor }}
+	<br>
+{{ endfor }}
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head></head>
+<body style="font-family: Calibri;">
+
+<span style="font-weight: bold; font-size: 22px">
+	$FullSeries$ &nbsp;&nbsp;&nbsp; {{if FullNumber}}#$FullNumber${{endif}}
+</span><br>
+<div style="font-weight: bold; font-size: 18px; margin-top: 1px">&nbsp;
+	{{if FullAlternateName}}($FullAlternateName$){{endif}}
+</div>
+
+<table style="text-align: left; " border="0" cellpadding="10" cellspacing="0">
+	<tr>
+		<td valign="top" width="270px">
+			{{ if Title }}
+			<span style="font-style: italic; font-weight: bold;">$Title$</span><br>
+			<br>
+			{{ endif }}
+			{{ if Summary }}
+			<span style="font-size: 11px; line-height: 14px; text-align: justify; font-family: Arial,Helvetica,sans;">$Summary$</span><br>
+			<br>
+			{{ endif }}
+			{{ if Cover }}
+				<div style="text-align: center;"><img src="$Cover | url$" width="283px" alt="Cover"></div>
+			{{ endif }}
+		</td>
+		<td valign="top" width="300px">
+			{{ if FullPublisher or Date }}
+				<span style="font-size: 19px;">
+					$FullPublisher${{ if FullPublisher and Date }}, {{ endif }}$Date$
+					<br>
+				</span>
+			{{ endif }}
+			$FileFormat$
+			<hr>
+			<table style="text-align: left; vertical-align: top; width: 100%; margin-top: 5px; " border="0" cellpadding="0" cellspacing="6">
+				<tr>
+					<td style="width: 144px; height: 24px; text-align: left;">
+						{{ for i in range(Rating) }}<img src="$path$rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+					</td>
+					<td style="width: 144px; height: 24px; text-align: right;">
+						{{ for i in range(CommunityRating) }}<img src="$path$com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+					</td>
+				</tr>
+			</table>
+			<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
+			{{ for field in config.fields }}
+				{{ if field == 'FirstPages' }}
+				{{ elif field == 'Cover' }}
+				{{ elif field == 'Title' }}
+				{{ elif field == 'Summary' }}
+				{{ elif field == 'Notes' }}
+				{{ elif field == '-' }}
+					</table>
+					<hr>
+					<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
+				{{ elif field == 'ReadPercentage' }}
+					<tr>
+						<td style="width: 93px;  vertical-align: top;">Read:</td>
+						<td style="vertical-align: top;">$ReadPercentage$%</td>
+					</tr>
+				{{ elif field == 'Web' }}
+					<tr>
+						<td colspan="2">
+							{{ if Web }}
+								{{ if Web.startswith('http://www.comicvine.com') }}
+									<a href="$Web$">See in ComicVine</a><br />
+								{{ else }}
+									<a href="$Web$">Webpage</a><br />
+								{{ endif }}
+							{{ endif }}
+						</td>
+					</tr>
+				{{ else }}
+					<tr>
+						<td style="width: 93px; vertical-align: top;">$field | translate$:</td>
+						<td style="vertical-align: top;">$getattr(book, field)$</td>
+					</tr>
+				{{ endif }}
+			{{ endfor }}
+			</table>
+		</td>
+	</tr>
+</table>
+{{ if 'Notes' in config.fields }}
+	{{ if Notes }}
+	<br>
+	<table style="text-align: left; vertical-align: top; width: 100%;" border="0" cellpadding="0" cellspacing="6">
+		<tr>
+			<td style="width: 93px; vertical-align: top;">Notes:</td>
+			<td style="vertical-align: top;">$Notes$</td>
+		</tr>
+	</table>
+	{{ endif }}
+{{ endif }}
+<br>
+{{ if 'FirstPages' in config.fields }}
+	{{ for i in range(1, 8) }}
+		<img src="{{ book.GetPage(i, 0, 100) | url }}" height="100px" alt="Page $i$">
+	{{ endfor }}
+{{ endif }}
+</body>
+</html>

@@ -1,0 +1,4 @@
+name = Default
+canEditFields = 1
+seriesFields = Issues|MissingIssues|DuplicatedIssues|NumIssues|ReadPercentage
+issueFields = Title|Summary|Cover|Writer|Penciller|Inker|Colorist|Letterer|CoverArtist|Editor|-|Genre|Tags|Characters|Teams|Locations|Web|-

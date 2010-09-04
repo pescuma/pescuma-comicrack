@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<body style="font-family: Calibri; background-color: #f0f0f0; margin: 0; padding: 0;">
+
+<table style="text-align: left" width="100%" border="0" cellpadding="5" cellspacing="0">
+	<tr>
+		<td valign="top" width="1px">
+			{{ if Cover }}
+				<div style="text-align: center"><img src="$Cover | url$" width="100px" alt="Cover"></div>
+			{{ endif }}
+			{{ if 'FirstPages' in config.fields }}
+				{{ for i in range(1, 4) }}
+					<br><img src="{{ book.GetPage(i, 100, 0) | url }}" width="100px" alt="Page $i$">
+				{{ endfor }}
+			{{ endif }}
+		</td>
+		<td valign="top">
+			<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="2">
+				<tr>
+					<td style="width: 100%; text-align: left;">
+						<span style="font-weight: bold; font-size: 21px">$FullName$</span>
+						{{ if FullAlternateName }}<span style="font-size: 19px; font-weight: bold">&nbsp;&nbsp;($FullAlternateName$)</span>{{ endif }}
+						{{ if FullPublisher or Date }}<span style="font-size: 19px;">&nbsp;&nbsp;&nbsp;&nbsp;{{FullPublisher}}{{ if FullPublisher and Date }}, {{ endif }}{{Date}}</span>{{ endif }}
+					</td>
+					<td style="width: 144px; text-align: left;">
+						{{ for i in range(Rating) }}<img src="$path$rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+					</td>
+					<td style="width: 144px; text-align: right;">
+						{{ for i in range(CommunityRating) }}<img src="$path$com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+					</td>
+				</tr>
+			</table>
+			<table style="text-align: left; vertical-align: top; width: 100%; margin-left: 5px; margin-top: 5px" border="0" cellpadding="0" cellspacing="2">
+			{{ for field in config.fields }}
+				{{ if field == 'FirstPages' }}
+				{{ elif field == 'Cover' }}
+				{{ elif field == 'Title' }}
+					</table>
+					{{ if Title }}<div style="font-style: italic; font-weight: bold">$Title$</div>{{ endif }}
+					<table style="text-align: left; vertical-align: top; width: 100%; margin-left: 5px; margin-top: 5px" border="0" cellpadding="0" cellspacing="2">
+				{{ elif field == 'Summary' }}
+					</table>
+					{{ if Summary }}<div style="font-size: 11px; line-height: 14px; text-align: justify; font-family: Arial,Helvetica,sans; margin: 10px">$Summary$</div>{{ endif }}
+					<table style="text-align: left; vertical-align: top; width: 100%; margin-left: 5px; margin-top: 5px" border="0" cellpadding="0" cellspacing="2">
+				{{ elif field == '-' }}
+					</table>
+					<hr>
+					<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="6">
+				{{ elif field == 'ReadPercentage' }}
+					<tr>
+						<td style="width: 123px;  vertical-align: top;">Read:</td>
+						<td style="vertical-align: top;">$ReadPercentage$%</td>
+					</tr>
+				{{ elif field == 'Web' }}
+					{{ if Web }}
+						<tr>
+							<td colspan="2">
+								{{ if Web.startswith('http://www.comicvine.com') }}
+									<a href="$Web$">See in ComicVine</a><br />
+								{{ else }}
+									<a href="$Web$">Webpage</a><br />
+								{{ endif }}
+							</td>
+						</tr>
+					{{ endif }}
+				{{ else }}
+					{{ if getattr(book, field) }}
+						<tr>
+							<td style="width: 123px; vertical-align: top;">$field | translate$:</td>
+							<td style="vertical-align: top;">
+								{{ if isinstance(getattr(book, field), list)}}
+									$'\n'.join(getattr(book, field)$
+								{{ else }}
+									$getattr(book, field)$
+								{{ endif }}
+							</td>
+						</tr>
+					{{ endif }}
+				{{ endif }}
+			{{ endfor }}
+			</table>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

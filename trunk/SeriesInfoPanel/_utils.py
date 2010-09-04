@@ -18,8 +18,11 @@ Boston, MA 02111-1307, USA.
 """
 
 import clr
-clr.AddReference('System.Drawing')
 import System
+
+clr.AddReference('System')
+
+from System.IO import File, StreamReader, StreamWriter
 
 
 SCRIPT_DIRECTORY =  __file__[:-len('_utils.py')] 
@@ -56,6 +59,159 @@ def ResizeImage(image, width, height):
 	graphics.DrawImage(image, 0, 0, result.Width, result.Height)
 	
 	return result
+
+def ReadFile(path, data):
+	if not File.Exists(path):
+		return data
+	
+	file = StreamReader(path)
+	
+	try:
+		line = file.ReadLine()
+		while line:
+			line = line.strip()
+			pos = line.find('=')
+			if pos < 0:
+				continue
+			name = line[:pos].strip()
+			val = line[pos+1:].strip()
+			
+			if hasattr(data, name):
+				oldVal = getattr(data, name)
+				if isinstance(oldVal, list):
+					tmp = []
+					for v in val.split('|'):
+						tmp.append(v.strip())
+					val = tmp
+					
+				elif isinstance(oldVal, bool):
+					val = bool(val)
+			
+			setattr(data, name, val)
+			
+			line = file.ReadLine()
+		
+	finally:
+		file.Dispose()
+	
+	return data
+	
+def WriteFile(path, data):
+	file = StreamWriter(path)
+	
+	try:
+		for name in dir(data):
+			if name[0] == '_':
+				continue
+			if not hasattr(data, name):
+				continue
+			val = getattr(data, name)
+			if not val or callable(val):
+				continue
+			
+			if isinstance(val, list):
+				val = '|'.join(val)
+			
+			file.WriteLine(name + " = " + ToString(val))
+		
+	finally:
+		file.Dispose()
+
+
+_translations = { 
+	'NumIssues': 'Num of books', 
+	'ReadPercentage': 'Read' ,
+	'FullPublishers': 'Publishers/Imprints'
+	}
+
+def TranslateFieldName(name):
+	if name in _translations:
+		return _translations[name]
+	
+	ret = ''
+	for i in range(len(name)):
+		c = name[i]
+		if i > 0 and c >= 'A' and c <= 'Z':
+			ret += ' '
+		ret += c
+	return ret
+
+
+def CreateFullName(series, volume, number, count):
+	ret = CreateFullSeries(series, volume)
+	
+	_number = CreateFullNumber(number, count)
+	if _number:
+		ret += ' #' + _number
+	
+	return ret
+
+def CreateFullNumber(number, count):
+	if not number:
+		return ''
+	
+	ret = number
+	if count:
+		ret += ' of ' + count
+	
+	return ret
+
+def CreateFullSeries(series, volume):
+	if series:
+		ret = series
+	else:
+		ret = '<Unknown Series>'
+	
+	if volume:
+		if volume < 1900:
+			ret += ' v'+ volume
+		else:
+			ret += ' (' + volume + ')'
+	
+	return ret
+
+def CreateFullAlternateName(series, number, count):
+	_number = CreateFullNumber(number, count)
+	
+	if not series and not _number:
+		return ''
+	
+	ret = series
+	if _number:
+		ret += ' #' + _number
+	
+	return ret
+	
+def CreateFullPublisher(publisher, imprint):
+	if not publisher and not imprint:
+		return ''
+	
+	if publisher:
+		ret = publisher
+	else:
+		ret = '<Unknown Publisher>'
+	
+	if imprint:
+		ret += ' - ' + imprint
+	
+	return ret
+
+def CreateDate(month, year):
+	if not month and not year:
+		return ''
+	
+	if month:
+		ret = month + '/'
+	else:
+		ret = ''
+	
+	if year:
+		ret += year
+	else:
+		ret += '????'
+	
+	return ret
+
 
 class Placeholder:
 	pass

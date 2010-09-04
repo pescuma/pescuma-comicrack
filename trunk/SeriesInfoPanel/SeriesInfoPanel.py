@@ -17,33 +17,95 @@ not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.
 """
 
+import clr
 import sys
 import System
 import tempita
 import time
 import re
 
+clr.AddReference('System')
+
+from System.IO import DirectoryInfo, File, FileInfo
+
 from _utils import *
 from _db import *
 from BookWrapper import *
 from SmartDict import *
+from OptionsForm import *
 
 
-def countTo(num):
-	try:
-		return range(round(float(num)))
-	except:
+class Skin:
+	def __init__(self, id):
+		self.id = id
+		self.name = id
+		self.canEditFields = False
+		self.seriesFields = []
+		self.issueFields = []
+	
+	def __str__(self):
+		return self.name
+
+class Config:
+	def __init__(self):
+		self.skin = 'default'
+		self.issueFields = []
+		self.seriesFields = []
+	
+	def copy(self):
+		ret = Config()
+		ret.skin = self.skin
+		ret.issueFields = self.issueFields
+		ret.seriesFields = self.seriesFields
+		return ret
+
+CONFIG_FILE = 'config.txt'
+
+skins = {}
+config = Config()
+lastConfigReadDate = None
+
+
+def _range(*args):
+	_len = len(args)
+	
+	start = 0
+	end = 0
+	
+	def _ToInt(x):
+		try:
+			return int(round(float(x)))
+		except:
+			return 0
+	
+	if _len < 1:
 		return []
+	elif _len == 1:
+		end = _ToInt(args[0])
+	else:
+		start = _ToInt(args[0])
+		end = _ToInt(args[1])
+	
+	if start >= end:
+		return []
+	else:
+		return range(start, end)
 
 defaultVars = SmartDict()
 defaultVars['info'] = ''
-defaultVars['countTo'] = countTo
+defaultVars['range'] = _range
+defaultVars['translate'] = TranslateFieldName
 defaultVars['path'] = SCRIPT_DIRECTORY
 
 
 
+	
 def GetTemplate(filename):
-	return tempita.HTMLTemplate.from_filename(SCRIPT_DIRECTORY + filename)
+	global config, skins
+	path = SCRIPT_DIRECTORY + config.skin + '_' + filename
+	if not File.Exists(path):
+		return tempita.HTMLTemplate('File not found: ' + path)
+	return tempita.HTMLTemplate.from_filename(path)
 
 
 
@@ -59,13 +121,19 @@ def GenerateHTMLForNoComic():
 
 
 def GenerateHTMLForIssue(book):
+	global config, skins
+	
 	book = BookWrapper(book)
 	
 	issueTemplate = GetTemplate('issue.html')
 	
+	cfg = Placeholder()
+	cfg.fields = config.issueFields
+	
 	vars = defaultVars.copy()
+	vars['config'] = cfg
 	vars['book'] = book
-	vars.addAttributes(book)
+	vars.addAttributes(book)	
 	
 	html = issueTemplate.substitute(vars)
 	
@@ -230,6 +298,8 @@ def GetFormats(volume):
 	return sorted(ret)
 
 def GenerateHTMLForSeries(books):
+	global config, skins
+
 	db = DB()
 	
 	info = []
@@ -293,6 +363,21 @@ def GenerateHTMLForSeries(books):
 			v.Imprints = GetImprints(volume)
 			v.Formats = GetFormats(volume)
 			
+			v.FullName = CreateFullSeries(s.Name, v.Name)
+			
+			v.FullPublishers = []
+			for pi in v.PublishersImprints:
+				ret = ''
+				if pi.Publisher:
+					ret = pi.Publisher
+				else:
+					ret = '<Unknown Publisher>'
+				
+				if pi.Imprint:
+					ret += ' - ' + pi.Imprint
+				v.FullPublishers.append(ret)
+
+			
 			s.Formats.update(v.Formats)
 			s.NumIssues += v.NumIssues
 		
@@ -305,7 +390,11 @@ def GenerateHTMLForSeries(books):
 	
 	seriesTemplate = GetTemplate('series.html')
 
+	cfg = Placeholder()
+	cfg.fields = config.seriesFields
+	
 	vars = defaultVars.copy()
+	vars['config'] = cfg
 	vars['allSeries'] = allSeries
 	
 	html = seriesTemplate.substitute(vars)
@@ -314,13 +403,14 @@ def GenerateHTMLForSeries(books):
 	return html
 
 
-
 #@Name Series Info Panel
 #@Hook ComicInfoHtml
 #@Enabled true
 #@Description Show information about selected series
 #@Image SIP.png
 def SeriesHtmlInfoPanel(books):
+	ReadConfig()
+	
 	InitBookWrapper(ComicRack)
 	
 	numBooks = len(books)
@@ -330,4 +420,77 @@ def SeriesHtmlInfoPanel(books):
 		return GenerateHTMLForIssue(books[0])
 	else:
 		return GenerateHTMLForSeries(books)
+
+
+#@Name Series Info Panel Options...
+#@Hook Library
+#@Enabled true
+#@Description Allow to configure Series Info Panel
+#@Image SIP.png
+def ConfigSeriesInfoPanel(books):
+	global config, skins
+	
+	ReadConfig()
+	
+	dlg = OptionsForm(skins, config)
+	if dlg.ShowDialog() == DialogResult.OK:
+		config = dlg._config
+		WriteConfig()
+
+
+
+
+
+
+
+
+
+
+
+
+def LoadSkins():
+	global config, skins
+	for file in DirectoryInfo(SCRIPT_DIRECTORY).GetFiles("*.skin"):
+		skin = Skin(file.Name[:-5])
+		
+		ReadFile(file.FullName, skin)
+		
+		skins[skin.id] = skin
+
+def ReadConfig():
+	global config, skins, lastConfigReadDate
+	
+	path = SCRIPT_DIRECTORY + CONFIG_FILE
+	lastModifiedDate = FileInfo(path).LastWriteTime
+	
+	if lastConfigReadDate and lastConfigReadDate == lastModifiedDate:
+		return
+	lastConfigReadDate = lastModifiedDate
+	
+	ReadFile(SCRIPT_DIRECTORY + CONFIG_FILE, config)
+	
+	resetSkin = (not config.skin or config.skin not in skins)
+	if resetSkin:
+		if 'default' in skins:
+			config.skin = 'default'
+		else:
+			config.skin = skins.keys()[0]
+	
+	skin = skins[config.skin]
+	
+	if resetSkin or len(config.seriesFields) == 0:
+		config.seriesFields = skin.seriesFields
+	
+	if resetSkin or len(config.issueFields) == 0:
+		config.issueFields = skin.issueFields
+
+def WriteConfig():
+	global config, skins
+	
+	WriteFile(SCRIPT_DIRECTORY + CONFIG_FILE, config)
+
+
+# Init only once
+
+LoadSkins()
 
