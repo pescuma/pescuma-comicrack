@@ -1,0 +1,9 @@
+Python Libs
+-----------
+
+http://www.python.org/download/releases/2.7/
+
+Files:
+	re.py
+
+Copied from libs dir
