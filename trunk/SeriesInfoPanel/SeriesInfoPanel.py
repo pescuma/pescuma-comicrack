@@ -34,6 +34,8 @@ from BookWrapper import *
 from SmartDict import *
 from OptionsForm import *
 
+SCRIPT_DIRECTORY =  __file__[:-len('SeriesInfoPanel.py')] 
+
 
 class Skin:
 	def __init__(self, id):

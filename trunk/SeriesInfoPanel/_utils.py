@@ -26,7 +26,6 @@ clr.AddReference('System')
 from System.IO import File, StreamReader, StreamWriter
 
 
-SCRIPT_DIRECTORY =  __file__[:-len('_utils.py')] 
 _ComicRack = None
 _ScriptName = ''
 

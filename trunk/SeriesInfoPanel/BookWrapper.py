@@ -50,7 +50,6 @@ class BookWrapper:
 		'Count' : '-1', 
 		'Year' : '-1', 
 		'Month' : '-1', 
-		'Volume' : '-1', 
 		'AlternateCount' : '-1', 
 		'Rating' : '0.0',
 		'CommunityRating' : '0.0'
@@ -63,16 +62,6 @@ class BookWrapper:
 		'LastPageRead',
 		'ReadPercentage',
 		'OpenedCount'
-		])
-	_getterFields = set([ 
-		'Cover',  
-		'FullName', 
-		'FullSeries', 
-		'FullNumber',
-		'FullAlternateName',
-		'FullAlternateNumber',
-		'FullPublisher',
-		'Date'
 		])
 	
 	def __init__(self, book):
@@ -98,10 +87,6 @@ class BookWrapper:
 	def __getattr__(self, name):
 		if name in self._dontConvert:
 			return getattr(self.raw, name)
-		
-		if name in self._getterFields:
-			getter = getattr(self, 'Get' + name)
-			return getter()
 		
 		if name in self._emptyVals:
 			emptVal = self._emptyVals[name]
@@ -180,3 +165,44 @@ class BookWrapper:
 	
 	def GetDate(self):
 		return CreateDate(self.Month, self.Year)
+	
+	def GetSeries(self):
+		ret = self.raw.Series
+		if ret:
+			return ret
+		ret = self.raw.ShadowSeries
+		if ret:
+			return ret
+		return ''
+	
+	def GetVolume(self):
+		ret = self.raw.Volume
+		if ret != -1:
+			return str(ret)
+		ret = self.raw.ShadowVolume
+		if ret != -1:
+			return str(ret)
+		return ''
+	
+	def GetNumber(self):
+		ret = self.raw.Number
+		if ret:
+			return ret
+		ret = self.raw.ShadowNumber
+		if ret:
+			return ret
+		return ''
+
+	# Properties
+	
+	Cover = property(GetCover)
+	FullName = property(GetFullName) 
+	FullSeries = property(GetFullSeries) 
+	FullNumber = property(GetFullNumber)
+	FullAlternateName = property(GetFullAlternateName)
+	FullAlternateNumber = property(GetFullAlternateNumber)
+	FullPublisher = property(GetFullPublisher)
+	Date = property(GetDate)
+	Series = property(GetSeries)
+	Volume = property(GetVolume)
+	Number = property(GetNumber)
