@@ -54,7 +54,14 @@ class BookWrapper:
 		'Rating' : '0.0',
 		'CommunityRating' : '0.0'
 		}
-	_dontConvert = set([ 'Pages' ])
+	_dontConvert = set([ 
+		'Pages',
+		'PageCount',
+		'FirstNonCoverPageIndex',
+		'LastPageRead',
+		'ReadPercentage',
+		'OpenedCount'
+		])
 	_getterFields = set([ 
 		'Cover',  
 		'FullName', 
@@ -114,6 +121,9 @@ class BookWrapper:
 	
 	def GetPage(self, page, width = 0, height = 0):
 		global _oldTmpFiles
+		
+		if page >= self.raw.PageCount:
+			return ''
 		
 		hash = str(page) + '_' + str(width) + '_' + str(height)
 		

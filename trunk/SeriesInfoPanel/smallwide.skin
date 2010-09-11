@@ -1,4 +1,7 @@
 name = Small Wide
 canEditFields = 1
-seriesFields = Issues|MissingIssues|DuplicatedIssues|NumIssues|ReadPercentage|FilesFormat
+seriesFields = Issues|MissingIssues|DuplicatedIssues|NumIssues|ReadPercentage|NextIssueToRead|FilesFormat
+seriesHideEmptyFields = 1
 issueFields = Title|Summary|-|Writer|Penciller|Inker|Colorist|Letterer|CoverArtist|Editor|-|Genre|Tags|Characters|Teams|Locations|Web
+issuesHideEmptyFields = 1
+issuesNumberOfFirstPages = 0

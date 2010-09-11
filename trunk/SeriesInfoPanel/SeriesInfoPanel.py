@@ -41,7 +41,10 @@ class Skin:
 		self.name = id
 		self.canEditFields = False
 		self.seriesFields = []
+		self.seriesHideEmptyFields = True
 		self.issueFields = []
+		self.issuesHideEmptyFields = False
+		self.issuesNumberOfFirstPages = 0
 	
 	def __str__(self):
 		return self.name
@@ -49,14 +52,20 @@ class Skin:
 class Config:
 	def __init__(self):
 		self.skin = 'default'
-		self.issueFields = []
 		self.seriesFields = []
+		self.seriesHideEmptyFields = True
+		self.issueFields = []
+		self.issuesHideEmptyFields = False
+		self.issuesNumberOfFirstPages = 0
 	
 	def copy(self):
 		ret = Config()
 		ret.skin = self.skin
-		ret.issueFields = self.issueFields
 		ret.seriesFields = self.seriesFields
+		ret.seriesHideEmptyFields = self.seriesHideEmptyFields
+		ret.issueFields = self.issueFields
+		ret.issuesHideEmptyFields = self.issuesHideEmptyFields
+		ret.issuesNumberOfFirstPages = self.issuesNumberOfFirstPages
 		return ret
 
 CONFIG_FILE = 'config.txt'
@@ -71,20 +80,14 @@ def _range(*args):
 	
 	start = 0
 	end = 0
-	
-	def _ToInt(x):
-		try:
-			return int(round(float(x)))
-		except:
-			return 0
-	
+		
 	if _len < 1:
 		return []
 	elif _len == 1:
-		end = _ToInt(args[0])
+		end = ToInt(args[0])
 	else:
-		start = _ToInt(args[0])
-		end = _ToInt(args[1])
+		start = ToInt(args[0])
+		end = ToInt(args[1])
 	
 	if start >= end:
 		return []
@@ -94,6 +97,8 @@ def _range(*args):
 defaultVars = SmartDict()
 defaultVars['info'] = ''
 defaultVars['range'] = _range
+defaultVars['toint'] = ToInt
+defaultVars['tofloat'] = ToFloat
 defaultVars['translate'] = TranslateFieldName
 defaultVars['path'] = SCRIPT_DIRECTORY
 
@@ -118,22 +123,55 @@ def GenerateHTMLForNoComic():
 	return html
 
 
+_fieldsNotToIgnore = set([
+	'ReadPercentage'
+	])
+
+def PackFields(fields, hideEmptyFields, getter):
+	if not hideEmptyFields:
+		return fields
+		
+	ret = []
+	
+	i = 0
+	for field in fields:
+		if field == '-':
+			if i == 0:
+				ret.append(field)
+			elif len(ret) > 0 and ret[-1] != '-':
+				ret.append(field)
+		elif field in _fieldsNotToIgnore:
+			ret.append(field)
+		else:
+			if getter(field):
+				ret.append(field)
+		i += 1
+	
+	if len(ret) > 0 and ret[-1] == '-' and fields[-1] != '-':
+		del ret[-1]
+	
+	return ret
 
 
 def GenerateHTMLForIssue(book):
 	global config, skins
-	
+
 	book = BookWrapper(book)
 	
 	issueTemplate = GetTemplate('issue.html')
 	
 	cfg = Placeholder()
-	cfg.fields = config.issueFields
 	
 	vars = defaultVars.copy()
 	vars['config'] = cfg
 	vars['book'] = book
 	vars.addAttributes(book)	
+	
+	cfg.fields = PackFields(config.issueFields, config.issuesHideEmptyFields, lambda f: vars[f])
+	if book.FirstNonCoverPageIndex + config.issuesNumberOfFirstPages > book.PageCount:
+		cfg.numOfFirstPages = book.PageCount - book.FirstNonCoverPageIndex
+	else:
+		cfg.numOfFirstPages = config.issuesNumberOfFirstPages
 	
 	html = issueTemplate.substitute(vars)
 	
@@ -334,19 +372,12 @@ def GenerateHTMLForSeries(books):
 		for volumeKey in sorted(series.volumes.iterkeys()):
 			volume = series.volumes[volumeKey]
 			
-			# Sort by number
-			def ToFloat(x):
-				try:
-					return float(re.sub('[^0-9.]', '', x))
-				except:
-					try:
-						return float(re.sub('[^0-9]', '', x))
-					except:
-						return x
-			volume.issues = sorted(volume.issues, key=lambda book: ToFloat(book.Number))
+			volume.sort()
 			
 			v = Placeholder()
 			s.Volumes.append(v)
+			
+			v.config = Placeholder()
 			
 			v.Name = volume.name
 			v.Cover = volume.issues[0].Cover
@@ -362,6 +393,7 @@ def GenerateHTMLForSeries(books):
 			v.Publishers = GetPublishers(volume)
 			v.Imprints = GetImprints(volume)
 			v.Formats = GetFormats(volume)
+			v.NextIssueToRead = volume.GetNextIssueToRead()
 			
 			v.FullName = CreateFullSeries(s.Name, v.Name)
 			
@@ -377,6 +409,8 @@ def GenerateHTMLForSeries(books):
 					ret += ' - ' + pi.Imprint
 				v.FullPublishers.append(ret)
 
+			v.config.fields = PackFields(config.seriesFields, config.seriesHideEmptyFields, lambda f: getattr(v, f))
+			v.config.showName = s.ShowVolumeNames
 			
 			s.Formats.update(v.Formats)
 			s.NumIssues += v.NumIssues
@@ -389,12 +423,8 @@ def GenerateHTMLForSeries(books):
 			break
 	
 	seriesTemplate = GetTemplate('series.html')
-
-	cfg = Placeholder()
-	cfg.fields = config.seriesFields
 	
 	vars = defaultVars.copy()
-	vars['config'] = cfg
 	vars['allSeries'] = allSeries
 	
 	html = seriesTemplate.substitute(vars)
@@ -483,6 +513,12 @@ def ReadConfig():
 	
 	if resetSkin or len(config.issueFields) == 0:
 		config.issueFields = skin.issueFields
+	
+	if resetSkin:
+		config.seriesHideEmptyFields = skin.seriesHideEmptyFields
+		config.issuesHideEmptyFields = skin.issuesHideEmptyFields
+		config.issuesNumberOfFirstPages = skin.issuesNumberOfFirstPages
+
 
 def WriteConfig():
 	global config, skins

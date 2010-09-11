@@ -54,3 +54,33 @@ class Volume:
 		self.name = ''
 		self.issues = []
 	
+	def sort(self):
+		# Sort by number
+		self.issues = sorted(self.issues, key=lambda book: ToFloat(book.Number))
+	
+	def StartedReading(self):
+		for book in self.issues:
+			if StartedReadingIssue(book):
+				return True
+		return False
+	
+	# You must sort before calling this one
+	def GetNextIssueToRead(self):
+		retNext = False
+		for book in self.issues:
+			if StartedReadingIssue(book):
+				if book.ReadPercentage == 100:
+					retNext = True
+				else:
+					return book
+			else:
+				if retNext:
+					return book
+		
+		if len(self.issues) > 0:
+			return self.issues[0]
+		
+		return None
+
+
+	
