@@ -17,8 +17,7 @@ not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.
 """
 
-from _utils import *
-import re
+from _utils1 import *
 
 
 class DB:
@@ -57,14 +56,31 @@ class Volume:
 	
 	def sort(self):
 		# Sort by number
-		def _ToFloat(x):
-			try:
-				return float(re.sub('[^0-9.]', '', x))
-			except:
-				try:
-					return float(re.sub('[^0-9]', '', x))
-				except:
-					return ToInt(x)
-		self.issues = sorted(self.issues, key=lambda book: _ToFloat(book.Number))
+		self.issues = sorted(self.issues, key=lambda book: ToFloat(book.Number))
+	
+	def StartedReading(self):
+		for book in self.issues:
+			if StartedReadingIssue(book):
+				return True
+		return False
+	
+	# You must sort before calling this one
+	def GetNextIssueToRead(self):
+		retNext = False
+		for book in self.issues:
+			if StartedReadingIssue(book):
+				if book.ReadPercentage == 100:
+					retNext = True
+				else:
+					return book
+			else:
+				if retNext:
+					return book
+		
+		if len(self.issues) > 0:
+			return self.issues[0]
+		
+		return None
+
 
 	

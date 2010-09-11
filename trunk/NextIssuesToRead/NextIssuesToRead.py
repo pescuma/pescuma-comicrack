@@ -40,16 +40,6 @@ def GetNumber(book):
 		return book.ShadowNumber
 
 
-def StartedReading(book):
-	return book.OpenedCount > 0 and (book.ReadPercentage > 50 or book.LastPageRead >= book.FrontCoverPageIndex + 3)
-
-def HasStartedReadIssue(volume):
-	for issue in volume.issues:
-		if StartedReading(issue):
-			return True
-	return False
-
-
 #@Name	 Next issues to read
 #@Hook	 CreateBookList
 #@PCount 0
@@ -80,7 +70,7 @@ def NextIssuesToRead(books, a, b):
 		for volumeKey in series.volumes.iterkeys():
 			volume = series.volumes[volumeKey]
 			
-			if not HasStartedReadIssue(volume):
+			if not volume.StartedReading():
 				toremove.append(volumeKey)
 		
 		for volumeKey in toremove:
@@ -107,18 +97,9 @@ def NextIssuesToRead(books, a, b):
 	ret = []
 	for series in db.series.itervalues():
 		for volume in series.volumes.itervalues():
-			addNext = False
-			for book in volume.issues:
-				if StartedReading(book):
-					if book.ReadPercentage == 100:
-						addNext = True
-					else:
-						ret.append(book)
-						addNext = False
-				else:
-					if addNext:
-						ret.append(book)
-						addNext = False
+			book = volume.GetNextIssueToRead()
+			if book:
+				ret.append(book)
 	
 	#dt = time.clock() - dt
 	#print '[NextIssuesToRead] Generated list in ', dt, 's'

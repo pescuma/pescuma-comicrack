@@ -19,6 +19,7 @@ Boston, MA 02111-1307, USA.
 
 import clr
 import System
+import re
 
 clr.AddReference('System')
 
@@ -38,9 +39,21 @@ def ToString(v):
 def ToInt(v):
 	v = ToString(v)
 	try:
-		return int(round(float(v)))
+		return int(round(ToFloat(v)))
 	except:
 		return 0
+
+def ToFloat(x):
+	try:
+		return float(x)
+	except:
+		try:
+			return float(re.sub('[^0-9.]', '', x))
+		except:
+			try:
+				return float(re.sub('[^0-9]', '', x))
+			except:
+				return 0.0
 
 def ResizeImage(image, width, height):
 	if width <= 0 and height <= 0:
@@ -85,7 +98,13 @@ def ReadFile(path, data):
 					val = tmp
 					
 				elif isinstance(oldVal, bool):
-					val = bool(val)
+					val = (val != 'False' and val != '0')
+					
+				elif isinstance(oldVal, int):
+					val = ToInt(val)
+					
+				elif isinstance(oldVal, float):
+					val = ToFloat(val)
 			
 			setattr(data, name, val)
 			
@@ -106,7 +125,7 @@ def WriteFile(path, data):
 			if not hasattr(data, name):
 				continue
 			val = getattr(data, name)
-			if not val or callable(val):
+			if val is None or callable(val):
 				continue
 			
 			if isinstance(val, list):
@@ -121,7 +140,8 @@ def WriteFile(path, data):
 _translations = { 
 	'NumIssues': 'Num of books', 
 	'ReadPercentage': 'Read' ,
-	'FullPublishers': 'Publishers/Imprints'
+	'FullPublishers': 'Publishers/Imprints',
+	'NextIssueToRead': 'Next to Read'
 	}
 
 def TranslateFieldName(name):
@@ -211,6 +231,9 @@ def CreateDate(month, year):
 		ret += '????'
 	
 	return ret
+
+def StartedReadingIssue(book):
+	return book.OpenedCount > 0 and (book.ReadPercentage > 50 or book.LastPageRead >= book.FrontCoverPageIndex + 3)
 
 
 class Placeholder:
