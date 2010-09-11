@@ -19,25 +19,9 @@ Boston, MA 02111-1307, USA.
 
 import time
 
-from _utils1 import *
-from _db1 import *
-
-
-def GetSeries(book):
-	if book.Series:
-		return book.Series
-	else:
-		return book.ShadowSeries
-def GetVolume(book):
-	if book.Volume:
-		return book.Volume
-	else:
-		return book.ShadowVolume
-def GetNumber(book):
-	if book.Number:
-		return book.Number
-	else:
-		return book.ShadowNumber
+from _utils import *
+from _db import *
+from BookWrapper import *
 
 
 #@Name	 Next issues to read
@@ -53,8 +37,9 @@ def NextIssuesToRead(books, a, b):
 	
 	# Load books
 	for book in books:
-		series = db.GetSeries(GetSeries(book))
-		volume = series.GetVolume(GetVolume(book))
+		book = BookWrapper(book)
+		series = db.GetSeries(book.Series)
+		volume = series.GetVolume(book.Volume)
 		volume.issues.append(book)
 	
 	#dt = time.clock() - dt
@@ -97,11 +82,13 @@ def NextIssuesToRead(books, a, b):
 	ret = []
 	for series in db.series.itervalues():
 		for volume in series.volumes.itervalues():
-			book = volume.GetNextIssueToRead()
-			if book:
-				ret.append(book)
+			ret.extend(volume.GetNextIssuesToRead())
 	
 	#dt = time.clock() - dt
 	#print '[NextIssuesToRead] Generated list in ', dt, 's'
+	
+	# Remove wrapper
+	for i in range(len(ret)):
+		ret[i] = ret[i].raw
 	
 	return ret
