@@ -107,7 +107,7 @@ _allSeriesFields = set([
 class Field:
 	def __init__(self, id):
 		self.id = id
-		self.name = TranslateFieldName(id)
+		self.name = Translate(id)
 	
 	def __str__(self):
 		return self.name
@@ -149,7 +149,7 @@ class OptionsForm(Form):
 		self._skinLabel.Name = "skinLabel"
 		self._skinLabel.Size = System.Drawing.Size(45, 18)
 		self._skinLabel.TabIndex = 0
-		self._skinLabel.Text = "Skin:"
+		self._skinLabel.Text = Translate("Options.Skin", "Skin:")
 		# 
 		# skinCombo
 		# 
@@ -168,7 +168,7 @@ class OptionsForm(Form):
 		self._seriesFieldsLabel.Name = "seriesFieldsLabel"
 		self._seriesFieldsLabel.Size = System.Drawing.Size(100, 19)
 		self._seriesFieldsLabel.TabIndex = 2
-		self._seriesFieldsLabel.Text = "Serie fields:"
+		self._seriesFieldsLabel.Text = Translate("Options.SerieFields", "Serie fields:")
 		# 
 		# issueFieldsLabel
 		# 
@@ -176,7 +176,7 @@ class OptionsForm(Form):
 		self._issueFieldsLabel.Name = "issueFieldsLabel"
 		self._issueFieldsLabel.Size = System.Drawing.Size(100, 23)
 		self._issueFieldsLabel.TabIndex = 8
-		self._issueFieldsLabel.Text = "Issue fields:"
+		self._issueFieldsLabel.Text = Translate("Options.IssueFields", "Issue fields:")
 		# 
 		# seriesFields
 		# 
@@ -202,7 +202,7 @@ class OptionsForm(Form):
 		self._seriesAddSeparator.Name = "seriesAddSeparator"
 		self._seriesAddSeparator.Size = System.Drawing.Size(155, 23)
 		self._seriesAddSeparator.TabIndex = 4
-		self._seriesAddSeparator.Text = "Add Separator"
+		self._seriesAddSeparator.Text = Translate("Options.AddSeparator", "Add Separator")
 		self._seriesAddSeparator.UseVisualStyleBackColor = True
 		self._seriesAddSeparator.Click += self.SerieAddSeparatorClick
 		# 
@@ -213,7 +213,7 @@ class OptionsForm(Form):
 		self._issueAddSeparator.Name = "issueAddSeparator"
 		self._issueAddSeparator.Size = System.Drawing.Size(156, 23)
 		self._issueAddSeparator.TabIndex = 10
-		self._issueAddSeparator.Text = "Add Separator"
+		self._issueAddSeparator.Text = Translate("Options.AddSeparator", "Add Separator")
 		self._issueAddSeparator.UseVisualStyleBackColor = True
 		self._issueAddSeparator.Click += self.IssueAddSeparatorClick
 		# 
@@ -224,7 +224,7 @@ class OptionsForm(Form):
 		self._okButton.Name = "okButton"
 		self._okButton.Size = System.Drawing.Size(75, 23)
 		self._okButton.TabIndex = 17
-		self._okButton.Text = "OK"
+		self._okButton.Text = Translate("Options.OK", "OK")
 		self._okButton.UseVisualStyleBackColor = True
 		self._okButton.Click += self.OkButtonClick
 		# 
@@ -235,7 +235,7 @@ class OptionsForm(Form):
 		self._cancelButton.Name = "cancelButton"
 		self._cancelButton.Size = System.Drawing.Size(75, 23)
 		self._cancelButton.TabIndex = 18
-		self._cancelButton.Text = "Cancel"
+		self._cancelButton.Text = Translate("Options.Cancel", "Cancel")
 		self._cancelButton.UseVisualStyleBackColor = True
 		# 
 		# seriesUp
@@ -245,7 +245,7 @@ class OptionsForm(Form):
 		self._seriesUp.Name = "seriesUp"
 		self._seriesUp.Size = System.Drawing.Size(78, 23)
 		self._seriesUp.TabIndex = 5
-		self._seriesUp.Text = "Up"
+		self._seriesUp.Text = Translate("Options.Up", "Up")
 		self._seriesUp.UseVisualStyleBackColor = True
 		self._seriesUp.Click += self.SeriesUpClick
 		# 
@@ -256,7 +256,7 @@ class OptionsForm(Form):
 		self._seriesDown.Name = "seriesDown"
 		self._seriesDown.Size = System.Drawing.Size(79, 23)
 		self._seriesDown.TabIndex = 6
-		self._seriesDown.Text = "Down"
+		self._seriesDown.Text = Translate("Options.Down", "Down")
 		self._seriesDown.UseVisualStyleBackColor = True
 		self._seriesDown.Click += self.SeriesDownClick
 		# 
@@ -267,7 +267,7 @@ class OptionsForm(Form):
 		self._issueDown.Name = "issueDown"
 		self._issueDown.Size = System.Drawing.Size(79, 23)
 		self._issueDown.TabIndex = 12
-		self._issueDown.Text = "Down"
+		self._issueDown.Text = Translate("Options.Down", "Down")
 		self._issueDown.UseVisualStyleBackColor = True
 		self._issueDown.Click += self.IssueDownClick
 		# 
@@ -278,7 +278,7 @@ class OptionsForm(Form):
 		self._issueUp.Name = "issueUp"
 		self._issueUp.Size = System.Drawing.Size(78, 23)
 		self._issueUp.TabIndex = 11
-		self._issueUp.Text = "Up"
+		self._issueUp.Text = Translate("Options.Up", "Up")
 		self._issueUp.UseVisualStyleBackColor = True
 		self._issueUp.Click += self.IssueUpClick
 		# 
@@ -288,7 +288,7 @@ class OptionsForm(Form):
 		self._seriesHideEmptyFields.Name = "seriesHideEmptyFields"
 		self._seriesHideEmptyFields.Size = System.Drawing.Size(156, 22)
 		self._seriesHideEmptyFields.TabIndex = 7
-		self._seriesHideEmptyFields.Text = "Hide empty fields"
+		self._seriesHideEmptyFields.Text = Translate("Options.HideEmptyFields", "Hide empty fields")
 		self._seriesHideEmptyFields.UseVisualStyleBackColor = True
 		# 
 		# issuesHideEmptyFields
@@ -297,7 +297,7 @@ class OptionsForm(Form):
 		self._issuesHideEmptyFields.Name = "issuesHideEmptyFields"
 		self._issuesHideEmptyFields.Size = System.Drawing.Size(156, 22)
 		self._issuesHideEmptyFields.TabIndex = 13
-		self._issuesHideEmptyFields.Text = "Hide empty fields"
+		self._issuesHideEmptyFields.Text = Translate("Options.HideEmptyFields", "Hide empty fields")
 		self._issuesHideEmptyFields.UseVisualStyleBackColor = True
 		# 
 		# issuesNumberOfFirstPagesLabel
@@ -306,7 +306,7 @@ class OptionsForm(Form):
 		self._issuesNumberOfFirstPagesLabel.Name = "issuesNumberOfFirstPagesLabel"
 		self._issuesNumberOfFirstPagesLabel.Size = System.Drawing.Size(100, 19)
 		self._issuesNumberOfFirstPagesLabel.TabIndex = 14
-		self._issuesNumberOfFirstPagesLabel.Text = "Num of first pages:"
+		self._issuesNumberOfFirstPagesLabel.Text = Translate("Options.NumOfFirstPages", "Num of first pages:")
 		# 
 		# issuesNumberOfFirstPages
 		# 
@@ -327,7 +327,7 @@ class OptionsForm(Form):
 		self._slowDownWarning.Name = "slowDownWarning"
 		self._slowDownWarning.Size = System.Drawing.Size(325, 17)
 		self._slowDownWarning.TabIndex = 16
-		self._slowDownWarning.Text = "(showing the first pages slows down the script)"
+		self._slowDownWarning.Text = Translate("Options.FirstPagesSlowDownWarning", "(showing the first pages slows down the script)")
 		self._slowDownWarning.TextAlign = System.Drawing.ContentAlignment.TopRight
 		# 
 		# OptionsForm
@@ -359,7 +359,7 @@ class OptionsForm(Form):
 		self.MinimizeBox = False
 		self.Name = "OptionsForm"
 		self.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-		self.Text = "Series Info Panel Options"
+		self.Text = Translate("Options.Title", "Series Info Panel Options")
 		self._issuesNumberOfFirstPages.EndInit()
 		self.ResumeLayout(False)
 	

@@ -9,7 +9,7 @@
 				<div style="text-align: center"><img src="$Cover | url$" width="100px" alt="Cover"></div>
 			{{ endif }}
 			{{ for i in range(config.numOfFirstPages) }}
-				<br><img src="{{ book.GetPage(FirstNonCoverPageIndex + i, 100, 0) | url }}" width="100px" alt="Page $i$">
+				<br><img src="{{ book.GetPage(FirstNonCoverPageIndex + i, 100, 0) | url }}" width="100px" alt="$translate('PageId', 'Page %d') % (FirstNonCoverPageIndex + i)$">
 			{{ endfor }}
 		</td>
 		<td valign="top">
@@ -57,9 +57,9 @@
 						<td colspan="2">
 							{{ if Web }}
 								{{ if Web.startswith('http://www.comicvine.com') }}
-									<a href="$Web$">See in ComicVine</a><br />
+									<a href="$Web$">$translate('WebComicVine', 'See in ComicVine')$</a><br />
 								{{ else }}
-									<a href="$Web$">Webpage</a><br />
+									<a href="$Web$">$field | translate$</a><br />
 								{{ endif }}
 							{{ endif }}
 						</td>

@@ -36,9 +36,10 @@ def _DeleteOldTmpFiles():
 	_oldTmpFiles = []
 
 
-def InitBookWrapper(ComicRack):
+def InitBookWrapper(cr):
 	global _ComicRack
-	_ComicRack = ComicRack
+	
+	_ComicRack = cr
 	
 	# Cleanup old temps. I need to do this better.
 	_DeleteOldTmpFiles()
@@ -120,7 +121,7 @@ class BookWrapper:
 		return self.GetPage(coverIndex, width, height)
 	
 	def GetPage(self, page, width = 0, height = 0):
-		global _oldTmpFiles
+		global _oldTmpFiles, _ComicRack
 		
 		if page >= self.raw.PageCount:
 			return ''

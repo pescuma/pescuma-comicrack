@@ -27,6 +27,8 @@ from System.IO import File, StreamReader, StreamWriter
 
 
 SCRIPT_DIRECTORY =  __file__[:-len('_utils.py')] 
+_ComicRack = None
+_ScriptName = ''
 
 
 def ToString(v):
@@ -141,10 +143,11 @@ _translations = {
 	'NumIssues': 'Num of books', 
 	'ReadPercentage': 'Read' ,
 	'FullPublishers': 'Publishers/Imprints',
-	'NextIssueToRead': 'Next to Read'
+	'NextIssueToRead': 'Next to Read',
+	'Web': 'Webpage'
 	}
 
-def TranslateFieldName(name):
+def _GuessTranslation(name):
 	if name in _translations:
 		return _translations[name]
 	
@@ -155,6 +158,12 @@ def TranslateFieldName(name):
 			ret += ' '
 		ret += c
 	return ret
+
+def Translate(key, defVal = ''):
+	global _ComicRack, _ScriptName
+	if not defVal:
+		defVal = _GuessTranslation(key)
+	return _ComicRack.Localize(_ScriptName, key, defVal)
 
 
 def CreateFullName(series, volume, number, count):
@@ -172,7 +181,7 @@ def CreateFullNumber(number, count):
 	
 	ret = number
 	if count:
-		ret += ' of ' + count
+		ret = Translate('FullNumber',  '%(number)s of %(count)s')  % { 'number': ret, 'count': count } 
 	
 	return ret
 
@@ -180,7 +189,7 @@ def CreateFullSeries(series, volume):
 	if series:
 		ret = series
 	else:
-		ret = '<Unknown Series>'
+		ret = Translate('UnknownSeries', '<Unknown Series>')
 	
 	if volume:
 		if ToInt(volume) < 1900:
@@ -209,7 +218,7 @@ def CreateFullPublisher(publisher, imprint):
 	if publisher:
 		ret = publisher
 	else:
-		ret = '<Unknown Publisher>'
+		ret = Translate('UnknownPublisher', '<Unknown Publisher>')
 	
 	if imprint:
 		ret += ' - ' + imprint
@@ -235,6 +244,13 @@ def CreateDate(month, year):
 def StartedReadingIssue(book):
 	return book.OpenedCount > 0 and (book.ReadPercentage > 50 or book.LastPageRead >= book.FrontCoverPageIndex + 3)
 
+def SetComicRack(cr):
+	global _ComicRack
+	_ComicRack = cr
+
+def SetScriptName(script):
+	global _ScriptName
+	_ScriptName = script
 
 class Placeholder:
 	pass

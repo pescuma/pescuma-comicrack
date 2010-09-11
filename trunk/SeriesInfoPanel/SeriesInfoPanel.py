@@ -99,7 +99,7 @@ defaultVars['info'] = ''
 defaultVars['range'] = _range
 defaultVars['toint'] = ToInt
 defaultVars['tofloat'] = ToFloat
-defaultVars['translate'] = TranslateFieldName
+defaultVars['translate'] = Translate
 defaultVars['path'] = SCRIPT_DIRECTORY
 
 
@@ -201,12 +201,12 @@ def GetIssuesRange(volume):
 			lastNum = volume.issues[-2].Number
 		
 		if firstNum != lastNum:
-			ret = firstNum + ' to ' + lastNum
+			ret = Translate("IssueRange",  "%(first)s to %(last)s")  % { 'first': firstNum, 'last': lastNum } 
 		else:
 			ret = firstNum
 		
 		if hasMillion:
-			ret += ' and 1.000.000'
+			ret = Translate("AndMillion",  "%(issues)s and 1.000.000")  % { 'issues': ret }
 		
 		return ret
 
@@ -331,7 +331,7 @@ def GetFormats(volume):
 		if book.Format:
 			ret.add(book.Format)
 		else:
-			ret.add('Series')
+			ret.add(Translate('Series'))
 	
 	return sorted(ret)
 
@@ -351,7 +351,7 @@ def GenerateHTMLForSeries(books):
 		
 		# Avoid look forever
 		if time.clock() > finishTime:
-			info.append('Stoped loading because it took too much time')
+			info.append(Translate('Warn.StoppedLoading', 'Stopped loading because it took too much time'))
 			break
 	
 	allSeries = []
@@ -403,7 +403,7 @@ def GenerateHTMLForSeries(books):
 				if pi.Publisher:
 					ret = pi.Publisher
 				else:
-					ret = '<Unknown Publisher>'
+					ret = Translate('UnknownPublisher', '<Unknown Publisher>')
 				
 				if pi.Imprint:
 					ret += ' - ' + pi.Imprint
@@ -419,7 +419,7 @@ def GenerateHTMLForSeries(books):
 		
 		# Avoid look forever
 		if time.clock() > finishTime:
-			info.append('Stoped processing because it took too much time')
+			info.append(Translate('Warn.StoppedProcessing', 'Stopped processing because it took too much time'))
 			break
 	
 	seriesTemplate = GetTemplate('series.html')
@@ -438,10 +438,12 @@ def GenerateHTMLForSeries(books):
 #@Enabled true
 #@Description Show information about selected series
 #@Image SIP.png
-def SeriesHtmlInfoPanel(books):
-	ReadConfig()
-	
+def SeriesInfoPanel(books):
+	SetComicRack(ComicRack)
+	SetScriptName('SeriesInfoPanel')
 	InitBookWrapper(ComicRack)
+	
+	ReadConfig()
 	
 	numBooks = len(books)
 	if numBooks < 1:
@@ -451,6 +453,10 @@ def SeriesHtmlInfoPanel(books):
 	else:
 		return GenerateHTMLForSeries(books)
 
+#@Hook  ConfigScript
+#@Key   SeriesInfoPanel
+def ConfigureSeriesInfoPanel():
+	ConfigSeriesInfoPanel([])
 
 #@Name Series Info Panel Options...
 #@Hook Library
@@ -459,6 +465,9 @@ def SeriesHtmlInfoPanel(books):
 #@Image SIP.png
 def ConfigSeriesInfoPanel(books):
 	global config, skins
+	
+	SetComicRack(ComicRack)
+	SetScriptName('SeriesInfoPanel')
 	
 	ReadConfig()
 	

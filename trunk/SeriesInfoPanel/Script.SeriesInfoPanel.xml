@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<TR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="Script.SeriesInfoPanel" CultureName="en-US">
+  <Texts>
+    <Text Key="Warn.StoppedLoading" Text="Stopped loading because it took too much time" Comment="" />
+    <Text Key="Warn.StoppedProcessing" Text="Stopped processing because it took too much time" Comment="" />
+    <Text Key="IssueRange" Text="%(first)s to %(last)s" Comment="" />
+    <Text Key="AndMillion" Text="%(issues)s and 1.000.000" Comment="" />
+    <Text Key="Series" Text="Series" Comment="" />
+    <Text Key="UnknownPublisher" Text="<Unknown Publisher>" Comment="" />
+    <Text Key="UnknownSeries" Text="<Unknown Series>" Comment="" />
+    <Text Key="FullNumber" Text="%(number)s of %(count)s" Comment="" />
+    <Text Key="Options.Skin" Text="Skin:" Comment="" />
+    <Text Key="Options.SerieFields" Text="Serie fields:" Comment="" />
+    <Text Key="Options.IssueFields" Text="Issue fields:" Comment="" />
+    <Text Key="Options.AddSeparator" Text="Add Separator" Comment="" />
+    <Text Key="Options.OK" Text="OK" Comment="" />
+    <Text Key="Options.Cancel" Text="Cancel" Comment="" />
+    <Text Key="Options.Up" Text="Up" Comment="" />
+    <Text Key="Options.Down" Text="Down" Comment="" />
+    <Text Key="Options.HideEmptyFields" Text="Hide empty fields" Comment="" />
+    <Text Key="Options.NumOfFirstPages" Text="Num of first pages:" Comment="" />
+    <Text Key="Options.FirstPagesSlowDownWarning" Text="(showing the first pages slows down the script)" Comment="" />
+    <Text Key="Options.Title" Text="Series Info Panel Options" Comment="" />
+    <Text Key="PageId" Text="Page %d" Comment="" />
+    <Text Key="SelectBooks" Text="Select a Series or eComic\nto show relevant Metadata" Comment="" />
+    <Text Key="WebComicVine" Text="See in ComicVine" Comment="" />
+    <Text Key="NumIssues" Text="Num of books" Comment="" />
+    <Text Key="ReadPercentage" Text="Read" Comment="" />
+    <Text Key="FullPublishers" Text="Publishers/Imprints" Comment="" />
+    <Text Key="NextIssueToRead" Text="Next to Read" Comment="" />
+    <Text Key="Web" Text="Webpage" Comment="" />
+    <Text Key="MissingIssues" Text="Missing Issues" Comment="" />
+    <Text Key="DuplicatedIssues" Text="Duplicated Issues" Comment="" />
+    <Text Key="FilesFormat" Text="Files Format" Comment="" />
+    <Text Key="FullName" Text="Full Name" Comment="" />
+    <Text Key="FullSeries" Text="Full Series" Comment="" />
+    <Text Key="FullNumber" Text="Full Number" Comment="" />
+    <Text Key="FullAlternateName" Text="Full Alternate Name" Comment="" />
+    <Text Key="FullAlternateNumber" Text="Full Alternate Number" Comment="" />
+    <Text Key="FullPublisher" Text="Publisher/Imprint" Comment="" />
+    <Text Key="Date" Text="Date" Comment="" />
+  </Texts>
+</TR>
