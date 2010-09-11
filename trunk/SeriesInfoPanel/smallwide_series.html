@@ -61,10 +61,16 @@
 								<td style="width: 123px;  vertical-align: top;">$field | translate$:</td>
 								<td style="vertical-align: top;">$volume.ReadPercentage$%</td>
 							</tr>
-						{{ elif field == 'NextIssueToRead' }}
+						{{ elif field == 'NextIssuesToRead' }}
 							<tr>
 								<td style="width: 123px;  vertical-align: top;">$field | translate$:</td>
-								<td style="vertical-align: top;">#{{ volume.NextIssueToRead.Number }}</td>
+								<td style="vertical-align: top;">
+									{{ if volume.NextIssuesToRead: }}
+										{{ for book in volume.NextIssuesToRead }}
+											#{{ book.Number }}
+										{{ endfor }}
+									{{ endif }}
+								</td>
 							</tr>
 						{{ else }}
 							<tr>

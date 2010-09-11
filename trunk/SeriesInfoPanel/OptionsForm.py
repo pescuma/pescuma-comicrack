@@ -100,9 +100,23 @@ _allSeriesFields = set([
 	'Publishers',
 	'Imprints',
 	'Formats',
-	'NextIssueToRead'
+	'NextIssuesToRead'
 	])
 
+
+def _FixFields(fs, possibilities):
+	ret = []
+	for f in fs:
+		if f == '-' or f in possibilities:
+			ret.append(f)
+	return ret
+
+def FixIssueFields(fs):
+	return _FixFields(fs, _allIssueFields)
+
+def FixSeriesFields(fs):
+	return _FixFields(fs, _allSeriesFields)
+	
 
 class Field:
 	def __init__(self, id):
@@ -505,5 +519,6 @@ class OptionsForm(Form):
 		self._config.seriesHideEmptyFields = self._seriesHideEmptyFields.Checked
 		self._config.issuesHideEmptyFields = self._issuesHideEmptyFields.Checked
 		self._config.issuesNumberOfFirstPages = ToInt(self._issuesNumberOfFirstPages.Value)
+
 
 

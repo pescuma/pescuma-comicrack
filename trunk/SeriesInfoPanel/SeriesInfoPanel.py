@@ -342,7 +342,7 @@ def GenerateHTMLForSeries(books):
 	
 	info = []
 	
-	finishTime = time.clock() + 1
+	finishTime = time.clock() + 0.2
 	for book in books:
 		book = BookWrapper(book)
 		series = db.GetSeries(book.Series)
@@ -393,7 +393,7 @@ def GenerateHTMLForSeries(books):
 			v.Publishers = GetPublishers(volume)
 			v.Imprints = GetImprints(volume)
 			v.Formats = GetFormats(volume)
-			v.NextIssueToRead = volume.GetNextIssueToRead()
+			v.NextIssuesToRead = volume.GetNextIssuesToRead()
 			
 			v.FullName = CreateFullSeries(s.Name, v.Name)
 			
@@ -426,6 +426,7 @@ def GenerateHTMLForSeries(books):
 	
 	vars = defaultVars.copy()
 	vars['allSeries'] = allSeries
+	vars['info'] = info
 	
 	html = seriesTemplate.substitute(vars)
 	
@@ -494,6 +495,9 @@ def LoadSkins():
 		
 		ReadFile(file.FullName, skin)
 		
+		skin.seriesFields = FixSeriesFields(skin.seriesFields)
+		skin.issueFields = FixIssueFields(skin.issueFields)
+		
 		skins[skin.id] = skin
 
 def ReadConfig():
@@ -527,6 +531,9 @@ def ReadConfig():
 		config.seriesHideEmptyFields = skin.seriesHideEmptyFields
 		config.issuesHideEmptyFields = skin.issuesHideEmptyFields
 		config.issuesNumberOfFirstPages = skin.issuesNumberOfFirstPages
+	
+	config.seriesFields = FixSeriesFields(config.seriesFields)
+	config.issueFields = FixIssueFields(config.issueFields)
 
 
 def WriteConfig():

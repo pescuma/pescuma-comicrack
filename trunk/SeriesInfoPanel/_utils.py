@@ -143,7 +143,7 @@ _translations = {
 	'NumIssues': 'Num of books', 
 	'ReadPercentage': 'Read' ,
 	'FullPublishers': 'Publishers/Imprints',
-	'NextIssueToRead': 'Next to Read',
+	'NextIssuesToRead': 'Next to Read',
 	'Web': 'Webpage'
 	}
 

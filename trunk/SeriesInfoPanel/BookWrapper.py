@@ -58,6 +58,7 @@ class BookWrapper:
 	_dontConvert = set([ 
 		'Pages',
 		'PageCount',
+		'FrontCoverPageIndex',
 		'FirstNonCoverPageIndex',
 		'LastPageRead',
 		'ReadPercentage',
