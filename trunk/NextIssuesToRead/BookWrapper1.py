@@ -22,7 +22,7 @@ clr.AddReference('System.Drawing')
 import sys
 import System
 
-from _utils import *
+from _utils1 import *
 
 
 _oldTmpFiles = []
@@ -74,15 +74,7 @@ class BookWrapper:
 		ret.update(dir(self.raw))
 		ret.update(self._getterFields)
 		return list(ret)
-
-	def set_email(self, value):
-		if '@' not in value:
-			raise Exception("This doesn't look like an email address.")
-		self._email = value
-
-	def get_email(self):
-		return self._email
-
+	
 	def _safeget(self, name):
 		try:
 			return self._get(name)
@@ -127,7 +119,8 @@ class BookWrapper:
 		
 		self._pages[hash] = ''
 		
-		image = _ComicRack.App.GetComicPage(self.raw, page)
+		#image = _ComicRack.App.GetComicPage(self.raw, page)
+		image = _ComicRack.App.GetComicThumbnail(self.raw, page)
 		if image is None:
 			return ''
 

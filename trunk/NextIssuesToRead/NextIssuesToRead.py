@@ -19,9 +19,9 @@ Boston, MA 02111-1307, USA.
 
 import time
 
-from _utils import *
-from _db import *
-from BookWrapper import *
+from _utils1 import *
+from _db1 import *
+from BookWrapper1 import *
 
 
 #@Name	 Next issues to read
