@@ -119,7 +119,8 @@ class BookWrapper:
 		
 		self._pages[hash] = ''
 		
-		image = _ComicRack.App.GetComicPage(self.raw, page)
+		#image = _ComicRack.App.GetComicPage(self.raw, page)
+		image = _ComicRack.App.GetComicThumbnail(self.raw, page)
 		if image is None:
 			return ''
 

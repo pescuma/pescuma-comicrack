@@ -67,6 +67,10 @@ class Volume:
 	# You must sort before calling this one
 	def GetNextIssuesToRead(self):
 		ret = []
+		
+		if len(self.issues) > 0 and not StartedReadingIssue(self.issues[0]):
+			ret.append(self.issues[0])
+		
 		addNext = False
 		for book in self.issues:
 			if StartedReadingIssue(book):
@@ -79,9 +83,6 @@ class Volume:
 				if addNext:
 					ret.append(book)
 					addNext = False
-		
-		if len(ret) == 0 and len(self.issues) > 0 and not StartedReadingIssue(self.issues[0]):
-			ret.append(self.issues[0])
 		
 		return ret
 

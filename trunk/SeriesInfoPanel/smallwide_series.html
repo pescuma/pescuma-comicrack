@@ -67,7 +67,7 @@
 								<td style="vertical-align: top;">
 									{{ if volume.NextIssuesToRead: }}
 										{{ for book in volume.NextIssuesToRead }}
-											#{{ book.Number }}
+											<a href="javascript: window.external.App.OpenBooks.OpenBook('id:$book.Id$', true, 0)">#$book.Number$</a>
 										{{ endfor }}
 									{{ endif }}
 								</td>

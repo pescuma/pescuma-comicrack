@@ -95,7 +95,7 @@
 {{ endif }}
 <br>
 {{ for i in range(config.numOfFirstPages) }}
-	<img src="{{ book.GetPage(FirstNonCoverPageIndex + i, 0, 100) | url }}" height="100px" alt="$translate('PageId', 'Page %d') % (FirstNonCoverPageIndex + i)$">
+	<img src="{{ book.GetPage(FirstNonCoverPageIndex + i) | url }}" height="100px" alt="$translate('PageId', 'Page %d') % (FirstNonCoverPageIndex + i)$">
 {{ endfor }}
 </body>
 </html>

@@ -9,7 +9,7 @@
 				<div style="text-align: center"><img src="$Cover | url$" width="100px" alt="Cover"></div>
 			{{ endif }}
 			{{ for i in range(config.numOfFirstPages) }}
-				<br><img src="{{ book.GetPage(FirstNonCoverPageIndex + i, 100, 0) | url }}" width="100px" alt="$translate('PageId', 'Page %d') % (FirstNonCoverPageIndex + i)$">
+				<br><img src="{{ book.GetPage(FirstNonCoverPageIndex + i) | url }}" width="100px" alt="$translate('PageId', 'Page %d') % (FirstNonCoverPageIndex + i)$">
 			{{ endfor }}
 		</td>
 		<td valign="top">

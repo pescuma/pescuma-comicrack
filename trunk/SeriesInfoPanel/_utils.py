@@ -162,8 +162,10 @@ def Translate(key, defVal = ''):
 	global _ComicRack, _ScriptName
 	if not defVal:
 		defVal = _GuessTranslation(key)
+	# First try from columns
+	defVal = _ComicRack.Localize('Columns', key, defVal)
+	# And allow it to be overriden by the script one
 	return _ComicRack.Localize(_ScriptName, key, defVal)
-
 
 def CreateFullName(series, volume, number, count):
 	ret = CreateFullSeries(series, volume)
