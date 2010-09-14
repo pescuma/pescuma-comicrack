@@ -25,7 +25,7 @@ clr.AddReference('System')
 
 from System.IO import File
 
-#@Name	 Files not found
+#@Name	 Files not found on disc
 #@Hook	 CreateBookList
 #@PCount 0
 #@Enabled true
@@ -51,7 +51,7 @@ def FilesNotFound(books, a, b):
 	
 	return ret
 
-#@Name	 Files found in disc
+#@Name	 Files found on disc
 #@Hook	 CreateBookList
 #@PCount 0
 #@Enabled true
