@@ -193,6 +193,15 @@ class BookWrapper:
 		if ret:
 			return ret
 		return ''
+	
+	def GetFormat(self):
+		ret = self.raw.Format
+		if ret:
+			return ret
+		ret = self.raw.ShadowFormat
+		if ret:
+			return ret
+		return Translate('Series')
 
 	# Properties
 	
@@ -207,3 +216,4 @@ class BookWrapper:
 	Series = property(GetSeries)
 	Volume = property(GetVolume)
 	Number = property(GetNumber)
+	Format = property(GetFormat)

@@ -69,7 +69,7 @@
 								<td style="vertical-align: top;">
 									{{ if volume.NextIssuesToRead: }}
 										{{ for book in volume.NextIssuesToRead }}
-											<a href="javascript: window.external.App.OpenBooks.OpenBook('id:$book.Id$', true, 0)">#$book.Number$</a>
+											<a href="javascript: window.external.ComicRack.OpenBooks.OpenFile('id:$book.Id$', true, 0)">#$book.Number$</a>
 										{{ endfor }}
 									{{ endif }}
 								</td>

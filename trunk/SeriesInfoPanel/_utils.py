@@ -182,7 +182,7 @@ def CreateFullNumber(number, count):
 	
 	ret = number
 	if count:
-		ret = Translate('FullNumber',  '%(number)s of %(count)s')  % { 'number': ret, 'count': count } 
+		ret = Translate('FullNumber',  '%(number)s (of %(count)s)')  % { 'number': ret, 'count': count } 
 	
 	return ret
 

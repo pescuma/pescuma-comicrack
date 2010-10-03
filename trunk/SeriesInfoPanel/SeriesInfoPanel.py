@@ -183,159 +183,6 @@ def GenerateHTMLForIssue(book):
 
 
 
-def GetIssuesRange(volume):
-	ret = ''
-	
-	numIssues = len(volume.issues)
-	
-	if numIssues < 1:
-		return '-'
-		
-	elif numIssues == 1:
-		return volume.issues[0].Number
-		
-	else:
-		firstNum = volume.issues[0].Number
-		lastNum = volume.issues[-1].Number
-		
-		hasMillion = (lastNum == '1000000')
-		if hasMillion:
-			lastNum = volume.issues[-2].Number
-		
-		if firstNum != lastNum:
-			ret = Translate("IssueRange",  "%(first)s to %(last)s")  % { 'first': firstNum, 'last': lastNum } 
-		else:
-			ret = firstNum
-		
-		if hasMillion:
-			ret = Translate("AndMillion",  "%(issues)s and 1.000.000")  % { 'issues': ret }
-		
-		return ret
-
-def GetDuplicatedIssues(volume):
-	nums = set()
-	ret = []
-	
-	for book in volume.issues:
-		n = book.Number
-		if n in nums:
-			ret.append(n)
-		else:
-			nums.add(n)
-	
-	return ret
-
-def GetMissingIssues(volume):
-	nums = set()
-	
-	for book in volume.issues:
-		nums.add(ToInt(book.Number))
-	
-	nums.discard(0)
-	nums.discard(1000000)
-	
-	ret = []
-	next = 0
-	for n in sorted(nums):
-		if next != 0 and n > next:
-			if n > next + 2:
-				ret.append(str(next) + '-' + str(n-1))
-			elif n == next + 2:
-				ret.append(str(next) + ' ' + str(next + 1))
-			else:
-				ret.append(str(next))
-		next = n + 1
-	
-	return ret
-
-def GetReadPercentage(volume):
-	read = 0
-	for book in volume.issues:
-		read += ToInt(book.ReadPercentage)
-	read = float(read) / len(volume.issues)
-	
-	# Avoid 100% when missing only one page
-	if read < 99:
-		return int(round(read))
-	else:
-		return int(read)
-
-def GetFilesFormat(volume):
-	ret = set()
-	
-	for book in volume.issues:
-		ret.add(book.FileFormat)
-	
-	return sorted(ret)
-
-def GetRating(volume, field):
-	sum = 0
-	count = 0
-
-	for book in volume.issues:
-		r = getattr(book, field)
-		if r:
-			sum += float(r)
-			count += 1
-	
-	if count > 0:
-		return "%.1f" % (sum / count)
-	else:
-		return None
-
-def GetPublishersImprints(volume):
-	ret = set()
-	
-	class PublisherImprint:
-		def __init__(self):
-			self.Publisher = ''
-			self.Imprint = ''
-		def __hash__(self):
-			return self.Publisher.__hash__() + self.Imprint.__hash__()
-		def __cmp__(self, other):
-			if self.Publisher != other.Publisher:
-				return -1 if self.Publisher < other.Publisher else 1
-			if self.Imprint != other.Imprint:
-				return -1 if self.Imprint < other.Imprint else 1
-			return 0
-	
-	for book in volume.issues:
-		pi = PublisherImprint()
-		pi.Publisher = book.Publisher
-		pi.Imprint = book.Imprint
-		if pi.Publisher or pi.Imprint:
-			ret.add(pi)
-	
-	return sorted(ret)
-
-def GetPublishers(volume):
-	ret = set()
-	
-	for book in volume.issues:
-		if book.Publisher:
-			ret.add(book.Publisher)
-	
-	return sorted(ret)
-
-def GetImprints(volume):
-	ret = set()
-	
-	for book in volume.issues:
-		if book.Imprint:
-			ret.add(book.Imprint)
-	
-	return sorted(ret)
-
-def GetFormats(volume):
-	ret = set()
-	
-	for book in volume.issues:
-		if book.Format:
-			ret.add(book.Format)
-		else:
-			ret.add(Translate('Series'))
-	
-	return sorted(ret)
 
 def GenerateHTMLForSeries(books):
 	global config, skins
@@ -347,9 +194,9 @@ def GenerateHTMLForSeries(books):
 	finishTime = time.clock() + 0.2
 	for book in books:
 		book = BookWrapper(book)
-		series = db.GetSeries(book.Series)
-		volume = series.GetVolume(book.Volume)
-		volume.issues.append(book)
+		series = db.GetSeries(book)
+		volume = series.GetVolume(book)
+		volume.Issues.append(book)
 		
 		# Avoid look forever
 		if time.clock() > finishTime:
@@ -366,13 +213,13 @@ def GenerateHTMLForSeries(books):
 		allSeries.append(s)
 		
 		s.Name = series.name
-		s.ShowVolumeNames = (series.volumes.keys() != [''])
+		s.ShowVolumeNames = (series.Volumes.keys() != [''])
 		s.Volumes = []
 		s.NumIssues = 0
 		s.Formats = set()
 		
-		for volumeKey in sorted(series.volumes.iterkeys()):
-			volume = series.volumes[volumeKey]
+		for volumeKey in sorted(series.Volumes.iterkeys()):
+			volume = series.Volumes[volumeKey]
 			
 			volume.sort()
 			
@@ -381,21 +228,22 @@ def GenerateHTMLForSeries(books):
 			
 			v.config = Placeholder()
 			
-			v.Name = volume.name
-			v.Cover = volume.issues[0].Cover
-			v.NumIssues = len(volume.issues)
-			v.Issues = GetIssuesRange(volume)
-			v.MissingIssues = GetMissingIssues(volume)
-			v.DuplicatedIssues = GetDuplicatedIssues(volume)
-			v.ReadPercentage = GetReadPercentage(volume)
-			v.FilesFormat = GetFilesFormat(volume)
-			v.Rating = GetRating(volume, "Rating")
-			v.CommunityRating = GetRating(volume, "CommunityRating")
-			v.PublishersImprints = GetPublishersImprints(volume)
-			v.Publishers = GetPublishers(volume)
-			v.Imprints = GetImprints(volume)
-			v.Formats = GetFormats(volume)
-			v.NextIssuesToRead = volume.GetNextIssuesToRead()
+			v.Name = volume.Name
+			v.Cover = volume.Issues[0].Cover
+			v.NumIssues = len(volume.Issues)
+			v.Issues = CreateFullNumber(volume.IssuesRange, volume.IssuesCount)
+			v.IssuesCount = volume.IssuesCount
+			v.MissingIssues = volume.MissingIssues
+			v.DuplicatedIssues = volume.DuplicatedIssues
+			v.ReadPercentage = volume.ReadPercentage
+			v.FilesFormat = volume.FilesFormat
+			v.Rating = volume.Rating
+			v.CommunityRating = volume.CommunityRating
+			v.PublishersImprints = volume.PublishersImprints
+			v.Publishers = volume.Publishers
+			v.Imprints = volume.Imprints
+			v.Format = volume.Format
+			v.NextIssuesToRead = volume.NextIssuesToRead
 			
 			v.FullName = CreateFullSeries(s.Name, v.Name)
 			
@@ -414,7 +262,7 @@ def GenerateHTMLForSeries(books):
 			v.config.fields = PackFields(config.seriesFields, config.seriesHideEmptyFields, lambda f: getattr(v, f))
 			v.config.showName = s.ShowVolumeNames
 			
-			s.Formats.update(v.Formats)
+			s.Formats.add(v.Format)
 			s.NumIssues += v.NumIssues
 		
 		s.Formats = sorted(s.Formats)

@@ -24,7 +24,7 @@
 					<table style="text-align: left; vertical-align: top; width: 100%" border="0" cellpadding="0" cellspacing="2">
 						<tr>
 							<td style="text-align: left;">
-								<span style="font-weight: bold; font-size: 21px">$'/'.join(volume.Formats)$: $volume.FullName$</span>
+								<span style="font-weight: bold; font-size: 21px">$volume.Format$: $volume.FullName$</span>
 								{{ if volume.FullPublishers }}<span style="font-size: 19px;">&nbsp;&nbsp;&nbsp;&nbsp;$' / '.join(volume.FullPublishers)$</span>{{ endif }}
 							</td>
 							{{ if volume.Rating }}
@@ -67,7 +67,7 @@
 								<td style="vertical-align: top;">
 									{{ if volume.NextIssuesToRead: }}
 										{{ for book in volume.NextIssuesToRead }}
-											<a href="javascript: window.external.App.OpenBooks.OpenBook('id:$book.Id$', true, 0)">#$book.Number$</a>
+											<a href="javascript: window.external.ComicRack.OpenBooks.OpenFile('id:$book.Id$', true, 0)">#$book.Number$</a>
 										{{ endfor }}
 									{{ endif }}
 								</td>
