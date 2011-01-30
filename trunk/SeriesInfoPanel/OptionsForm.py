@@ -99,7 +99,7 @@ _allSeriesFields = set([
 	'FullPublishers',
 	'Publishers',
 	'Imprints',
-	'Formats',
+	'Format',
 	'NextIssuesToRead'
 	])
 
