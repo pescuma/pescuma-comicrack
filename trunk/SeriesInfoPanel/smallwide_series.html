@@ -17,7 +17,7 @@
 			<tr>
 				<td valign="top" width="1px">
 					{{ if 'Cover' in volume.config.fields }}{{ if volume.Cover }}
-						<div style="text-align: center"><img src="$volume.Cover | url$" width="100px" alt="$translate('Cover')$"></div>
+						<div style="text-align: center"><img src="file:///$volume.Cover | url$" width="100px" alt="$translate('Cover')$"></div>
 					{{ endif }}{{ endif }}
 				</td>
 				<td valign="top">
@@ -29,12 +29,12 @@
 							</td>
 							{{ if volume.Rating }}
 								<td style="width: 122px; text-align: left;">
-									{{ for i in range(volume.Rating) }}<img src="$path$rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+									{{ for i in range(volume.Rating) }}<img src="file:///$path$rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
 								</td>
 							{{ endif }}
 							{{ if volume.CommunityRating }}
 								<td style="width: 122px; text-align: right;">
-									{{ for i in range(volume.CommunityRating) }}<img src="$path$com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+									{{ for i in range(volume.CommunityRating) }}<img src="file:///$path$com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
 								</td>
 							{{ endif }}
 						</tr>

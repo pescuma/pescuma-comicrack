@@ -6,10 +6,10 @@
 	<tr>
 		<td valign="top" width="1px">
 			{{ if 'Cover' in config.fields }}{{ if Cover }}
-				<div style="text-align: center"><img src="$Cover | url$" width="100px" alt="Cover"></div>
+				<div style="text-align: center"><img src="file:///$Cover | url$" width="100px" alt="Cover"></div>
 			{{ endif }}{{ endif }}
 			{{ for i in range(config.numOfFirstPages) }}
-				<br><img src="{{ book.GetPage(FirstNonCoverPageIndex + i) | url }}" width="100px" alt="$translate('PageId', 'Page %d') % (FirstNonCoverPageIndex + i)$">
+				<br><img src="file:///{{ book.GetPage(FirstNonCoverPageIndex + i) | url }}" width="100px" alt="$translate('PageId', 'Page %d') % (FirstNonCoverPageIndex + i)$">
 			{{ endfor }}
 		</td>
 		<td valign="top">
@@ -22,12 +22,12 @@
 					</td>
 					{{ if Rating }}
 						<td style="width: 122px; text-align: left;">
-							{{ for i in range(Rating) }}<img src="$path$rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+							{{ for i in range(Rating) }}<img src="file:///$path$rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
 						</td>
 					{{ endif }}
 					{{ if CommunityRating }}
 						<td style="width: 122px; text-align: right;">
-							{{ for i in range(CommunityRating) }}<img src="$path$com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
+							{{ for i in range(CommunityRating) }}<img src="file:///$path$com_rating_star_full.png" style="width: 24px; height: 24px;" alt="">{{ endfor }}
 						</td>
 					{{ endif }}
 				</tr>
