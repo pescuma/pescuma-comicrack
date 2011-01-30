@@ -109,7 +109,10 @@ class BookWrapper:
 	def GetPage(self, page, width = 0, height = 0):
 		global _oldTmpFiles, _ComicRack
 		
-		if page >= self.raw.PageCount:
+		if not self.raw.FilePath:
+			if page > 0:
+				return ''
+		elif page >= self.raw.PageCount:
 			return ''
 		
 		hash = str(page) + '_' + str(width) + '_' + str(height)
@@ -202,6 +205,17 @@ class BookWrapper:
 		if ret:
 			return ret
 		return Translate('Series')
+	
+	def GetFileFormat(self):
+		if not self.raw.FilePath:
+			return Translate('Fileless')
+		ret = self.raw.FileFormat
+		if ret:
+			return ret
+		return self.raw.ShadowFileFormat
+		if ret:
+			return ret
+		return Translate('Unknown')
 
 	# Properties
 	
@@ -217,3 +231,4 @@ class BookWrapper:
 	Volume = property(GetVolume)
 	Number = property(GetNumber)
 	Format = property(GetFormat)
+	FileFormat = property(GetFileFormat)

@@ -61,15 +61,18 @@
 					</tr>
 				{{ elif field == 'Web' }}
 					<tr>
-						<td colspan="2">
-							{{ if Web }}
-								{{ if Web.startswith('http://www.comicvine.com') }}
+						{{ if Web }}
+							{{ if Web.startswith('http://www.comicvine.com') }}
+								<td colspan="2">
 									<a href="$Web$">$translate('WebComicVine', 'See in ComicVine')$</a><br />
-								{{ else }}
-									<a href="$Web$">$field | translate$</a><br />
-								{{ endif }}
+								</td>
+							{{ else }}
+								<tr>
+									<td style="width: 93px;  vertical-align: top;">$field | translate$:</td>
+									<td style="vertical-align: top;"><a href="$Web$">$Web$</a></td>
+								</tr>
 							{{ endif }}
-						</td>
+						{{ endif }}
 					</tr>
 				{{ else }}
 					<tr>
