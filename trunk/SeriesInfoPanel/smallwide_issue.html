@@ -5,9 +5,9 @@
 <table style="text-align: left" width="100%" border="0" cellpadding="5" cellspacing="0">
 	<tr>
 		<td valign="top" width="1px">
-			{{ if Cover }}
+			{{ if 'Cover' in config.fields }}{{ if Cover }}
 				<div style="text-align: center"><img src="$Cover | url$" width="100px" alt="Cover"></div>
-			{{ endif }}
+			{{ endif }}{{ endif }}
 			{{ for i in range(config.numOfFirstPages) }}
 				<br><img src="{{ book.GetPage(FirstNonCoverPageIndex + i) | url }}" width="100px" alt="$translate('PageId', 'Page %d') % (FirstNonCoverPageIndex + i)$">
 			{{ endfor }}

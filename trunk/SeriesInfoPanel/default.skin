@@ -1,6 +1,6 @@
 name = Default
 canEditFields = 1
-seriesFields = Issues|MissingIssues|DuplicatedIssues|NumIssues|ReadPercentage|NextIssuesToRead|-
+seriesFields = Cover|Issues|MissingIssues|DuplicatedIssues|NumIssues|ReadPercentage|NextIssuesToRead|-
 seriesHideEmptyFields = 1
 issueFields = Title|Summary|Cover|Writer|Penciller|Inker|Colorist|Letterer|CoverArtist|Editor|-|Genre|Tags|Characters|Teams|Locations|Web|-
 issuesHideEmptyFields = 0

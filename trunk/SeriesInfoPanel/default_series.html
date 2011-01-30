@@ -23,9 +23,9 @@
 						<span style="font-style: italic; font-weight: bold; font-size: 19px;">{{ volume.Name | '?' }}</span><br>
 						<br>
 					{{ endif }}
-					{{ if volume.Cover }}
+					{{ if 'Cover' in volume.config.fields }}{{ if volume.Cover }}
 						<div style="text-align: center"><img src="{{ volume.Cover | url }}" width="283px" alt="$translate('Cover')$"></div>
-					{{ endif }}
+					{{ endif }}{{ endif }}
 				</td>
 				<td valign="top" width="100%">
 					<span style="font-size: 19px;">$'\n'.join(volume.FullPublishers)$</span><br>

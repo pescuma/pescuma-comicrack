@@ -13,17 +13,17 @@
 <table style="text-align: left; " border="0" cellpadding="10" cellspacing="0">
 	<tr>
 		<td valign="top" width="270px">
-			{{ if Title }}
+			{{ if 'Title' in config.fields }}{{ if Title }}
 			<span style="font-style: italic; font-weight: bold;">$Title$</span><br>
 			<br>
-			{{ endif }}
-			{{ if Summary }}
+			{{ endif }}{{ endif }}
+			{{ if 'Summary' in config.fields }}{{ if Summary }}
 			<span style="font-size: 11px; line-height: 14px; text-align: justify; font-family: Arial,Helvetica,sans;">$Summary$</span><br>
 			<br>
-			{{ endif }}
-			{{ if Cover }}
+			{{ endif }}{{ endif }}
+			{{ if 'Cover' in config.fields }}{{ if Cover }}
 				<div style="text-align: center;"><img src="$Cover | url$" width="283px" alt="Cover"></div>
-			{{ endif }}
+			{{ endif }}{{ endif }}
 		</td>
 		<td valign="top" width="100%">
 			{{ if FullPublisher or Date }}
