@@ -24,12 +24,7 @@ from _db1 import *
 from BookWrapper1 import *
 
 
-#@Name	 Next issues to read
-#@Hook	 CreateBookList
-#@PCount 0
-#@Enabled true
-#@Description List next books to read in series that you already started reading
-def NextIssuesToRead(books, a, b):
+def FindIssues(books, a, b, count, includeFirsts):
 	db = DB()
 	
 	#print '[NextIssuesToRead] Loading books from db'
@@ -49,17 +44,18 @@ def NextIssuesToRead(books, a, b):
 	#dt = time.clock()
 	
 	# Remove volumes that have not book marked as started read
-	for series in db.series.itervalues():
-		toremove = []
-		
-		for volumeKey in series.volumes.iterkeys():
-			volume = series.volumes[volumeKey]
+	if not includeFirsts:
+		for series in db.series.itervalues():
+			toremove = []
 			
-			if not volume.StartedReading():
-				toremove.append(volumeKey)
-		
-		for volumeKey in toremove:
-			del series.volumes[volumeKey]
+			for volumeKey in series.volumes.iterkeys():
+				volume = series.volumes[volumeKey]
+				
+				if not volume.StartedReading():
+					toremove.append(volumeKey)
+			
+			for volumeKey in toremove:
+				del series.volumes[volumeKey]
 	
 	#dt = time.clock() - dt
 	#print '[NextIssuesToRead] Removed in ', dt, 's'
@@ -82,7 +78,7 @@ def NextIssuesToRead(books, a, b):
 	ret = []
 	for series in db.series.itervalues():
 		for volume in series.volumes.itervalues():
-			ret.extend(volume.GetNextIssuesToRead())
+			ret.extend(volume.GetNextIssuesToRead(count))
 	
 	#dt = time.clock() - dt
 	#print '[NextIssuesToRead] Generated list in ', dt, 's'
@@ -92,3 +88,36 @@ def NextIssuesToRead(books, a, b):
 		ret[i] = ret[i].raw
 	
 	return ret
+
+
+#@Name	 Next issues to read
+#@Hook	 CreateBookList
+#@PCount 0
+#@Enabled true
+#@Description List next books to read in series that you already started reading
+def NextIssuesToRead(books, a, b):
+	return FindIssues(books, a, b, 1, False)
+
+#@Name	 Next 4 issues to read
+#@Hook	 CreateBookList
+#@PCount 0
+#@Enabled true
+#@Description List next 4 books to read in series that you already started reading
+def Next4IssuesToRead(books, a, b):
+	return FindIssues(books, a, b, 4, False)
+
+#@Name	 Next issues to read including firsts
+#@Hook	 CreateBookList
+#@PCount 0
+#@Enabled true
+#@Description List next books to read in all series
+def NextIssuesToReadIncludingFirsts(books, a, b):
+	return FindIssues(books, a, b, 1, True)
+
+#@Name	 Next 4 issues to read including firsts
+#@Hook	 CreateBookList
+#@PCount 0
+#@Enabled true
+#@Description List next 4 books to read in all series
+def Next4IssuesToReadIncludingFirsts(books, a, b):
+	return FindIssues(books, a, b, 4, True)

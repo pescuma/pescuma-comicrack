@@ -65,24 +65,21 @@ class Volume:
 		return False
 	
 	# You must sort before calling this one
-	def GetNextIssuesToRead(self):
+	def GetNextIssuesToRead(self, count):
 		ret = []
 		
-		if len(self.issues) > 0 and not StartedReadingIssue(self.issues[0]):
-			ret.append(self.issues[0])
-		
-		addNext = False
+		addNext = count
 		for book in self.issues:
 			if StartedReadingIssue(book):
 				if book.ReadPercentage == 100:
-					addNext = True
+					addNext = count
 				else:
 					ret.append(book)
-					addNext = False
+					addNext = addNext - 1
 			else:
-				if addNext:
+				if addNext > 0:
 					ret.append(book)
-					addNext = False
+					addNext = addNext - 1
 		
 		return ret
 
